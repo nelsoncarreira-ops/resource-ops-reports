@@ -304,7 +304,7 @@ main{padding:36px 48px 80px;max-width:1600px}
 </div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────────────────────────
+// CONFIG
 const PWD = 'SS2026';
 const SID = '12Co2djnGChEnjzVWJC2mIdr87_7XOakUZl3UvyourV8';
 const GIDS = {
@@ -316,10 +316,10 @@ const GIDS = {
   qcDS:      '827721452'
 };
 const REFRESH_MS = 6 * 60 * 60 * 1000;
-let C = {}; // cache
-let AF = 'All'; // active filter
+let C = {};
+let AF = 'All';
 
-// ── AUTH ─────────────────────────────────────────────────────────────────────
+// AUTH
 function checkPwd() {
   if (document.getElementById('pwd').value === PWD) {
     document.getElementById('gate').style.display = 'none';
@@ -333,132 +333,116 @@ function checkPwd() {
 }
 document.getElementById('pwd').addEventListener('keydown', e => { if (e.key === 'Enter') checkPwd(); });
 
-// ── FETCH via Google Visualization API (CORS-safe from any hosted origin) ────
-function fetchGviz(gid) {
-  return new Promise((resolve, reject) => {
-    const cb = 'gviz_' + gid + '_' + Date.now();
-    const url = `https://docs.google.com/spreadsheets/d/${SID}/gviz/tq?tqx=out:json&tq=select+*&gid=${gid}&callback=${cb}`;
-    const script = document.createElement('script');
-    const timer = setTimeout(() => { cleanup(); reject(new Error('Timeout gid=' + gid)); }, 20000);
+// FETCH via CSV export - works from any hosted origin (GitHub Pages, etc.)
+async function fetchSheet(gid) {
+  const url = `https://docs.google.com/spreadsheets/d/${SID}/export?format=csv&gid=${gid}`;
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status} gid=${gid}`);
+  return parseCSV(await resp.text());
+}
 
-    function cleanup() {
-      clearTimeout(timer);
-      delete window[cb];
-      script.parentNode && script.parentNode.removeChild(script);
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cols = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else cur += ch;
     }
-
-    window[cb] = function(data) {
-      cleanup();
-      try {
-        const cols = data.table.cols.map(c => (c.label || c.id || '').trim());
-        const rows = [cols];
-        (data.table.rows || []).forEach(r => {
-          rows.push((r.c || []).map(cell => {
-            if (!cell || cell.v === null || cell.v === undefined) return '';
-            // Prefer formatted value (keeps $ and % symbols), fall back to raw
-            return cell.f !== undefined && cell.f !== null ? String(cell.f) : String(cell.v);
-          }));
-        });
-        resolve(rows);
-      } catch(e) { reject(e); }
-    };
-
-    script.onerror = () => { cleanup(); reject(new Error('Load failed gid=' + gid)); };
-    script.src = url;
-    document.head.appendChild(script);
-  });
+    cols.push(cur.trim());
+    rows.push(cols);
+  }
+  return rows;
 }
 
-// ── PARSERS ──────────────────────────────────────────────────────────────────
-function pm(s) { // parse money/number
-  if (s === null || s === undefined || s === '') return 0;
-  s = String(s).replace(/,/g,'').replace(/[$]/g,'').trim();
-  const neg = s.startsWith('-') || s.startsWith('(');
-  s = s.replace(/[^0-9.]/g,'');
-  const v = parseFloat(s) || 0;
-  return neg ? -v : v;
-}
-function pp(s) { // parse percent → number or null
-  if (s === null || s === undefined || s === '') return null;
-  s = String(s).replace('%','').trim();
-  const v = parseFloat(s);
-  return isNaN(v) ? null : v;
-}
-function fm(n) { // format money
-  n = parseFloat(n) || 0;
-  const a = Math.abs(n);
-  const sign = n < 0 ? '-' : '';
-  if (a >= 1e6) return sign + '$' + (a/1e6).toFixed(1) + 'M';
-  if (a >= 1000) return sign + '$' + Math.round(a/1000) + 'K';
-  return sign + '$' + Math.round(a);
+// PARSERS
+function findHdr(rows, kw) {
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i].some(c => c && c.toLowerCase().includes(kw))) return i;
+  }
+  return 0;
 }
 
-// ── PARSE SHEETS DATA ─────────────────────────────────────────────────────────
 function parseGeneral(rows) {
   if (!rows || rows.length < 2) return [];
-  const header = rows[0];
-  return rows.slice(1).filter(r => r[0] && r[1] && !r[0].toLowerCase().includes('month'))
-    .map(r => { const o={}; header.forEach((h,i) => o[h]=r[i]||''); return o; });
+  const hi = findHdr(rows, 'business unit');
+  const hdr = rows[hi];
+  return rows.slice(hi+1)
+    .filter(r => r[0] && r[1] && !r[0].toLowerCase().includes('month'))
+    .map(r => { const o={}; hdr.forEach((h,i) => o[h.trim()] = r[i]||''); return o; });
 }
 
 function parseStudioUtil(rows) {
   if (!rows || rows.length < 2) return [];
-  const h = rows[0].map(x => x.toLowerCase());
-  const bi = h.findIndex(x => x.includes('billable'));
-  const si = h.findIndex(x => x.includes('studio'));
+  const hi = findHdr(rows, 'business unit');
+  const h = rows[hi].map(x => x.toLowerCase());
   const bui = h.findIndex(x => x.includes('business unit'));
-  if (bi<0||si<0||bui<0) return [];
+  const si = h.findIndex(x => x.includes('studio'));
+  const bi = h.findIndex(x => x.includes('billable'));
+  if (bui<0||si<0||bi<0) return [];
   const BUS = ['Earth','Evergreen','Sky','Bloom'];
-  return rows.slice(1).filter(r => r[bui] && BUS.includes(r[bui].trim()))
+  return rows.slice(hi+1)
+    .filter(r => r[bui] && BUS.includes(r[bui].trim()))
     .map(r => ({ bu: r[bui].trim(), studio: r[si].trim(), billable: pp(r[bi]) }));
 }
 
 function parseRoleUtil(rows) {
   if (!rows || rows.length < 2) return [];
-  const h = rows[0].map(x => x.toLowerCase());
+  const hi = findHdr(rows, 'business unit');
+  const h = rows[hi].map(x => x.toLowerCase());
   const bui = h.findIndex(x => x.includes('business unit'));
   const si = h.findIndex(x => x.includes('studio'));
-  const ri = h.findIndex(x => x.includes('functional group') || x.includes('role'));
+  const ri = h.findIndex(x => x.includes('functional group') || (x.includes('role') && !x.includes('studio')));
   const bi = h.findIndex(x => x.includes('billable'));
   if (bui<0||si<0||ri<0||bi<0) return [];
   const BUS = ['Earth','Evergreen','Sky','Bloom'];
-  return rows.slice(1).filter(r => r[bui] && BUS.includes(r[bui].trim()))
+  return rows.slice(hi+1)
+    .filter(r => r[bui] && BUS.includes(r[bui].trim()))
     .map(r => ({ bu: r[bui].trim(), studio: r[si].trim(), role: r[ri].trim(), billable: pp(r[bi]) }));
 }
 
 function parseStaffUtil(rows) {
   if (!rows || rows.length < 2) return [];
-  const h = rows[0].map(x => x.toLowerCase());
+  const hi = findHdr(rows, 'username');
+  const h = rows[hi].map(x => x.toLowerCase());
   const ni = h.findIndex(x => x.includes('username'));
   const bui = h.findIndex(x => x.includes('business unit'));
   const si = h.findIndex(x => x.includes('studio'));
-  const ri = h.findIndex(x => x.includes('functional group') || x.includes('role'));
-  // Billable util col — exclude 'target'
+  const ri = h.findIndex(x => x.includes('functional group') || (x.includes('role') && !x.includes('studio')));
   const bi = h.findIndex(x => x.includes('billable') && !x.includes('target'));
   const ti = h.findIndex(x => x.includes('target'));
   if (ni<0||bui<0||bi<0||ti<0) return [];
   const BUS = ['Earth','Evergreen','Sky','Bloom'];
-  return rows.slice(1).filter(r => r[ni] && r[bui] && BUS.includes(r[bui].trim()))
+  return rows.slice(hi+1)
+    .filter(r => r[ni] && r[bui] && BUS.includes(r[bui].trim()))
     .map(r => {
       let tgt = pp(r[ti]);
-      if (tgt !== null && tgt > 0 && tgt <= 1) tgt = tgt * 100; // decimal → %
+      if (tgt !== null && tgt > 0 && tgt <= 1) tgt = tgt * 100;
       return { name: r[ni].trim(), bu: r[bui].trim(), studio: r[si]?r[si].trim():'', role: r[ri]?r[ri].trim():'', billable: pp(r[bi]), target: tgt };
     });
 }
 
 function parseDS(rows) {
   if (!rows || rows.length < 2) return { services:[], data:[] };
-  const header = rows[0];
-  const services = header.slice(3).filter(s => s && s.trim());
+  const hi = findHdr(rows, 'item');
+  const hdr = rows[hi];
+  const services = hdr.slice(3).filter(s => s && s.trim());
   const data = [];
-  rows.slice(1).forEach(r => {
+  rows.slice(hi+1).forEach(r => {
     if (!r[0]) return;
     const item = String(r[0]).toLowerCase();
     if (item.includes('demand x supply') && item.includes('hours')) {
       const row = { bu: (r[1]||'').trim(), studio: (r[2]||'').trim(), values: {} };
       services.forEach((s,j) => {
         const raw = r[j+3];
-        row.values[s.trim()] = raw !== undefined && raw !== '' ? pm(raw) : 0;
+        row.values[s.trim()] = (raw !== undefined && raw !== '') ? pm(raw) : 0;
       });
       if (row.bu && row.studio) data.push(row);
     }
@@ -466,14 +450,35 @@ function parseDS(rows) {
   return { services: services.map(s => s.trim()), data };
 }
 
-// ── THRESHOLDS ────────────────────────────────────────────────────────────────
-function stSt(b) { // studio status
+// FORMATTERS
+function pm(s) {
+  if (s === null || s === undefined || s === '') return 0;
+  s = String(s).replace(/,/g,'').replace(/[$]/g,'').trim();
+  const neg = s.startsWith('-') || s.startsWith('(');
+  s = s.replace(/[^0-9.]/g,'');
+  return neg ? -(parseFloat(s)||0) : (parseFloat(s)||0);
+}
+function pp(s) {
+  if (s === null || s === undefined || s === '') return null;
+  const v = parseFloat(String(s).replace('%','').trim());
+  return isNaN(v) ? null : v;
+}
+function fm(n) {
+  n = parseFloat(n)||0;
+  const a = Math.abs(n), sg = n<0?'-':'';
+  if (a>=1e6) return sg+'$'+(a/1e6).toFixed(1)+'M';
+  if (a>=1000) return sg+'$'+Math.round(a/1000)+'K';
+  return sg+'$'+Math.round(a);
+}
+
+// THRESHOLDS
+function stSt(b) {
   if (b===null) return 'grey';
   if (b>=75&&b<=85) return 'green';
   if ((b>=65&&b<75)||(b>85&&b<=95)) return 'yellow';
   return 'red';
 }
-function rlSt(role, b) { // role status
+function rlSt(role, b) {
   if (b===null) return 'grey';
   const t = {Creative:[80,90],'Creative Leader':[75,85],PM:[75,85],CL:[75,85],AM:[45,55],Producer:[75,85]}[role]||[75,85];
   if (b>=t[0]&&b<=t[1]) return 'green';
@@ -483,89 +488,83 @@ function rlSt(role, b) { // role status
 function rlTgt(role) {
   return {Creative:85,'Creative Leader':80,PM:80,CL:80,AM:50,Producer:80}[role]||80;
 }
-const pillLabel = s => s==='green'?'On target':s==='yellow'?'Watch':'Off target';
+const pillLbl = s => s==='green'?'On target':s==='yellow'?'Watch':'Off target';
 
-// ── FILTER ────────────────────────────────────────────────────────────────────
-function filt(arr, key='bu') {
-  return AF==='All' ? arr : arr.filter(r => r[key]===AF);
-}
+// FILTER + TABS
+function filt(arr, key='bu') { return AF==='All'?arr:arr.filter(r=>r[key]===AF); }
 function setF(bu, el) {
-  AF = bu;
-  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  AF=bu;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   renderAll();
 }
 function tab(name, el) {
-  document.querySelectorAll('.tbtn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tp').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('tp-' + name).classList.add('active');
+  document.getElementById('tp-'+name).classList.add('active');
 }
 
-// ── LOAD ──────────────────────────────────────────────────────────────────────
+// LOAD
 async function loadAll() {
-  setBadge('loading', 'Loading…');
+  setBadge('loading','Loading...');
   try {
-    const [general, studioUtil, roleUtil, staffUtil, execDS, qcDS] = await Promise.all([
-      fetchGviz(GIDS.general), fetchGviz(GIDS.studioUtil), fetchGviz(GIDS.roleUtil),
-      fetchGviz(GIDS.staffUtil), fetchGviz(GIDS.execDS), fetchGviz(GIDS.qcDS)
+    const [g,su,ru,sf,ex,qc] = await Promise.all([
+      fetchSheet(GIDS.general), fetchSheet(GIDS.studioUtil),
+      fetchSheet(GIDS.roleUtil), fetchSheet(GIDS.staffUtil),
+      fetchSheet(GIDS.execDS), fetchSheet(GIDS.qcDS)
     ]);
     C = {
-      general: parseGeneral(general),
-      studioUtil: parseStudioUtil(studioUtil),
-      roleUtil: parseRoleUtil(roleUtil),
-      staffUtil: parseStaffUtil(staffUtil),
-      execDS: parseDS(execDS),
-      qcDS: parseDS(qcDS)
+      general: parseGeneral(g),
+      studioUtil: parseStudioUtil(su),
+      roleUtil: parseRoleUtil(ru),
+      staffUtil: parseStaffUtil(sf),
+      execDS: parseDS(ex),
+      qcDS: parseDS(qc)
     };
-    // Extract period from general rows — look for date value
-    let period = '—';
-    for (const row of general.slice(1)) {
-      if (row[0] && /\d{1,2}\/\d{1,2}\/\d{4}/.test(row[0])) { period = row[0]; break; }
-      for (let i=0;i<row.length;i++) {
-        if (String(row[i]).toLowerCase().includes('current month') && row[i+1]) {
-          period = row[i+1]; break;
-        }
+    // Find period from date rows in general tab
+    let period = 'April 2026';
+    for (const row of g.slice(1)) {
+      for (const cell of row) {
+        if (cell && /\d{1,2}\/\d{1,2}\/\d{4}/.test(cell)) { period = cell; break; }
       }
-      if (period !== '—') break;
     }
     document.getElementById('hperiod').textContent = period;
-    document.getElementById('hrefresh').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    setBadge('live', 'Live');
+    document.getElementById('hrefresh').textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    setBadge('live','Live');
     renderAll();
   } catch(e) {
-    console.error(e);
-    setBadge('error', 'Error — retry');
+    console.error('Load error:', e);
+    setBadge('error','Error - retry');
   }
 }
-function setBadge(cls, text) {
+function setBadge(cls, txt) {
   const b = document.getElementById('hbadge');
-  b.className = 'hbadge ' + cls;
-  b.textContent = text;
+  b.className = 'hbadge '+cls;
+  b.textContent = txt;
 }
 
-// ── RENDER ALL ────────────────────────────────────────────────────────────────
+// RENDER
 function renderAll() {
-  if (!C.general || !C.general.length) return;
+  if (!C.general||!C.general.length) return;
   rRisk(); rRevenue(); rUtil(); rCap();
 }
 
-// ── RISK ──────────────────────────────────────────────────────────────────────
 function rRisk() {
-  const rows = filt(C.general, 'Business Unit');
-  if (!rows.length) { document.getElementById('rgrid').innerHTML = '<div class="nodata">No data for this filter.</div>'; return; }
-  let h = '';
+  const rows = filt(C.general,'Business Unit');
+  if (!rows.length) { document.getElementById('rgrid').innerHTML='<div class="nodata">No data.</div>'; return; }
+  let h='';
   rows.forEach(r => {
     const cur=pm(r['Current MRR']), fcst=pm(r['Forecasted Revenue']);
     const delta=fcst-cur, pct=cur?(delta/cur*100):0;
-    const revSt = pct<-10?'red':pct<0?'yellow':'green';
-    const su = C.studioUtil.find(u => u.studio===r['Studio']);
-    const bill = su ? su.billable : null;
-    const utSt = stSt(bill);
-    const dr = C.execDS.data.find(d => d.studio===r['Studio']);
-    let capSt = 'green';
-    if (dr) { const neg=Object.values(dr.values).filter(v=>v<-30).length; capSt=neg>=4?'red':neg>=2?'yellow':'green'; }
-    h += `<div class="rcard">
+    const revSt=pct<-10?'red':pct<0?'yellow':'green';
+    const su=C.studioUtil.find(u=>u.studio===r['Studio']);
+    const bill=su?su.billable:null;
+    const utSt=stSt(bill);
+    const dr=C.execDS.data.find(d=>d.studio===r['Studio']);
+    let capSt='green';
+    if (dr){const neg=Object.values(dr.values).filter(v=>v<-30).length; capSt=neg>=4?'red':neg>=2?'yellow':'green';}
+    h+=`<div class="rcard">
       <div class="rct">
         <div><div class="rc-bu">${r['Business Unit']}</div><div class="rc-st">${r['Studio']}</div></div>
         <div class="rdots">
@@ -575,45 +574,41 @@ function rRisk() {
         </div>
       </div>
       <div class="rmets">
-        <div><div class="rml">Rev Δ</div><div class="rmv ${revSt}">${pct>=0?'+':''}${pct.toFixed(0)}%</div></div>
-        <div><div class="rml">Billable</div><div class="rmv ${utSt}">${bill!==null?bill+'%':'—'}</div></div>
+        <div><div class="rml">Rev delta</div><div class="rmv ${revSt}">${pct>=0?'+':''}${pct.toFixed(0)}%</div></div>
+        <div><div class="rml">Billable</div><div class="rmv ${utSt}">${bill!==null?bill+'%':'--'}</div></div>
         <div><div class="rml">Fcst Rev</div><div class="rmv n">${fm(fcst)}</div></div>
       </div>
     </div>`;
   });
-  document.getElementById('rgrid').innerHTML = h;
+  document.getElementById('rgrid').innerHTML=h;
 }
 
-// ── REVENUE ───────────────────────────────────────────────────────────────────
 function rRevenue() {
-  const rows = filt(C.general, 'Business Unit');
-  const tCur=rows.reduce((s,r)=>s+pm(r['Current MRR']),0);
-  const tFcst=rows.reduce((s,r)=>s+pm(r['Forecasted Revenue']),0);
-  const tLoss=rows.reduce((s,r)=>s+pm(r['Potential MRR Loss']),0);
-  const tInc=rows.reduce((s,r)=>s+pm(r['Incoming MRR']),0);
-  const delta=tFcst-tCur;
-  document.getElementById('krow').innerHTML = `
-    <div class="kcard"><div class="klabel">Total Current MRR</div><div class="kval">${fm(tCur)}</div></div>
-    <div class="kcard"><div class="klabel">Forecasted Revenue</div><div class="kval">${fm(tFcst)}</div><div class="ksub ${delta>=0?'up':'dn'}">${delta>=0?'+':''}${fm(delta)} vs current</div></div>
-    <div class="kcard"><div class="klabel">Incoming MRR</div><div class="kval up">${fm(tInc)}</div></div>
-    <div class="kcard"><div class="klabel">Potential MRR Loss</div><div class="kval dn">${fm(tLoss)}</div></div>`;
-
-  let rh='', eh='';
-  rows.forEach(r => {
+  const rows=filt(C.general,'Business Unit');
+  const tC=rows.reduce((s,r)=>s+pm(r['Current MRR']),0);
+  const tF=rows.reduce((s,r)=>s+pm(r['Forecasted Revenue']),0);
+  const tL=rows.reduce((s,r)=>s+pm(r['Potential MRR Loss']),0);
+  const tI=rows.reduce((s,r)=>s+pm(r['Incoming MRR']),0);
+  const d=tF-tC;
+  document.getElementById('krow').innerHTML=`
+    <div class="kcard"><div class="klabel">Total Current MRR</div><div class="kval">${fm(tC)}</div></div>
+    <div class="kcard"><div class="klabel">Forecasted Revenue</div><div class="kval">${fm(tF)}</div><div class="ksub ${d>=0?'up':'dn'}">${d>=0?'+':''}${fm(d)} vs current</div></div>
+    <div class="kcard"><div class="klabel">Incoming MRR</div><div class="kval up">${fm(tI)}</div></div>
+    <div class="kcard"><div class="klabel">Potential MRR Loss</div><div class="kval dn">${fm(tL)}</div></div>`;
+  let rh='',eh='';
+  rows.forEach(r=>{
     const cur=pm(r['Current MRR']),fcst=pm(r['Forecasted Revenue']);
     const loss=pm(r['Potential MRR Loss']),inc=pm(r['Incoming MRR']);
-    const d=fcst-cur, pct=cur?(d/cur*100):0;
+    const dv=fcst-cur,pct=cur?(dv/cur*100):0;
     const bst=pm(r['Current Boosters']);
     rh+=`<tr>
-      <td><span class="buc">${r['Business Unit']}</span></td>
-      <td><span class="stc">${r['Studio']}</span></td>
-      <td>${fm(cur)}</td><td>${bst>0?fm(bst):'—'}</td>
-      <td>${fm(pm(r['Current Revenue']))}</td>
-      <td class="${loss<0?'dn':'warn'}">${loss!==0?fm(loss):'—'}</td>
-      <td class="${inc>0?'up':''}">${inc>0?'+'+fm(inc):'—'}</td>
+      <td><span class="buc">${r['Business Unit']}</span></td><td><span class="stc">${r['Studio']}</span></td>
+      <td>${fm(cur)}</td><td>${bst>0?fm(bst):'--'}</td><td>${fm(pm(r['Current Revenue']))}</td>
+      <td class="${loss<0?'dn':'warn'}">${loss!==0?fm(loss):'--'}</td>
+      <td class="${inc>0?'up':''}">${inc>0?'+'+fm(inc):'--'}</td>
       <td>${fm(fcst)}</td>
       <td class="${pct>=0?'up':'dn'}">${pct>=0?'+':''}${pct.toFixed(1)}%</td>
-      <td><div class="btrack"><div class="bfill ${d>=0?'up':'dn'}" style="width:${Math.min(Math.abs(pct),100)}%"></div></div></td>
+      <td><div class="btrack"><div class="bfill ${dv>=0?'up':'dn'}" style="width:${Math.min(Math.abs(pct),100)}%"></div></div></td>
     </tr>`;
     const vs=[pm(r['Current MRR / AM']),pm(r['Forecasted MRR / AM']),pm(r['Current MRR / PM']),pm(r['Forecasted MRR / PM']),
               pm(r['Current MRR / CL']),pm(r['Forecasted MRR / CL']),pm(r['Current MRR / Creative']),pm(r['Forecasted MRR / Creative'])];
@@ -625,85 +620,70 @@ function rRevenue() {
       <td>${fm(vs[6])}</td><td class="${vs[7]>=vs[6]?'up':'dn'}">${fm(vs[7])}</td>
     </tr>`;
   });
-  document.getElementById('revbody').innerHTML = rh||'<tr><td colspan="10" class="nodata">No data</td></tr>';
-  document.getElementById('effbody').innerHTML = eh||'<tr><td colspan="10" class="nodata">No data</td></tr>';
+  document.getElementById('revbody').innerHTML=rh||'<tr><td colspan="10" class="nodata">No data</td></tr>';
+  document.getElementById('effbody').innerHTML=eh||'<tr><td colspan="10" class="nodata">No data</td></tr>';
 }
 
-// ── UTILIZATION ───────────────────────────────────────────────────────────────
 function rUtil() {
-  // Studio
   let sh='';
-  filt(C.studioUtil).forEach(r => {
+  filt(C.studioUtil).forEach(r=>{
     const st=stSt(r.billable);
     sh+=`<tr><td><span class="buc">${r.bu}</span></td><td><span class="stc">${r.studio}</span></td>
-      <td>${r.billable!==null?r.billable+'%':'—'}</td>
-      <td><span class="pill ${st}">${pillLabel(st)}</span></td></tr>`;
+      <td>${r.billable!==null?r.billable+'%':'--'}</td>
+      <td><span class="pill ${st}">${pillLbl(st)}</span></td></tr>`;
   });
-  document.getElementById('ustbody').innerHTML = sh||'<tr><td colspan="4" class="nodata">No data</td></tr>';
+  document.getElementById('ustbody').innerHTML=sh||'<tr><td colspan="4" class="nodata">No data</td></tr>';
 
-  // Role
   let rlh='';
-  filt(C.roleUtil).forEach(r => {
-    const tgt=rlTgt(r.role), st=rlSt(r.role, r.billable);
+  filt(C.roleUtil).forEach(r=>{
+    const tgt=rlTgt(r.role),st=rlSt(r.role,r.billable);
     rlh+=`<tr><td><span class="buc">${r.bu}</span></td><td><span class="stc">${r.studio}</span></td>
-      <td>${r.role}</td><td>${r.billable!==null?r.billable+'%':'—'}</td><td>${tgt}%</td>
-      <td><span class="pill ${st}">${pillLabel(st)}</span></td></tr>`;
+      <td>${r.role}</td><td>${r.billable!==null?r.billable+'%':'--'}</td><td>${tgt}%</td>
+      <td><span class="pill ${st}">${pillLbl(st)}</span></td></tr>`;
   });
-  document.getElementById('urlbody').innerHTML = rlh||'<tr><td colspan="6" class="nodata">No data</td></tr>';
+  document.getElementById('urlbody').innerHTML=rlh||'<tr><td colspan="6" class="nodata">No data</td></tr>';
 
-  // Individual flags
-  const flagged = filt(C.staffUtil).filter(p => {
-    const b=p.billable, t=p.target;
-    if (b===null||t===null||t===0) return false;
-    return Math.abs(b-t) > t*0.25;
-  }).sort((a,b) => Math.abs(b.billable-b.target) - Math.abs(a.billable-a.target));
+  const flagged=filt(C.staffUtil).filter(p=>{
+    const b=p.billable,t=p.target;
+    return b!==null&&t!==null&&t!==0&&Math.abs(b-t)>t*0.25;
+  }).sort((a,b)=>Math.abs(b.billable-b.target)-Math.abs(a.billable-a.target));
 
   let fh='';
-  if (!flagged.length) {
-    fh='<div class="nodata">No individuals flagged for this filter.</div>';
-  } else {
-    flagged.forEach(p => {
-      const type = p.billable > p.target ? 'over' : 'under';
-      fh+=`<div class="fcard ${type}">
-        <div><div class="fname">${p.name}</div><div class="fsub">${p.bu} · ${p.studio} · ${p.role}</div></div>
-        <div><div class="factual">${p.billable!==null?p.billable+'%':'—'}</div><div class="ftgt">target ${p.target!==null?p.target.toFixed(0):'—'}%</div></div>
-      </div>`;
-    });
-  }
-  document.getElementById('fgrid').innerHTML = fh;
+  if (!flagged.length) { fh='<div class="nodata">No individuals flagged for this filter.</div>'; }
+  else flagged.forEach(p=>{
+    const type=p.billable>p.target?'over':'under';
+    fh+=`<div class="fcard ${type}">
+      <div><div class="fname">${p.name}</div><div class="fsub">${p.bu} - ${p.studio} - ${p.role}</div></div>
+      <div><div class="factual">${p.billable!==null?p.billable+'%':'--'}</div><div class="ftgt">target ${p.target!==null?p.target.toFixed(0):'--'}%</div></div>
+    </div>`;
+  });
+  document.getElementById('fgrid').innerHTML=fh;
 }
 
-// ── CAPACITY ──────────────────────────────────────────────────────────────────
-function rCap() {
-  rDS(C.execDS, 'exec');
-  rDS(C.qcDS, 'qc');
-}
-function rDS(ds, key) {
+function rCap() { rDS(C.execDS,'exec'); rDS(C.qcDS,'qc'); }
+function rDS(ds,key) {
   if (!ds||!ds.data) return;
-  const data=filt(ds.data), svcs=ds.services||[];
-
-  // Constraint cards
+  const data=filt(ds.data),svcs=ds.services||[];
   const tots={};
-  svcs.forEach(s => { tots[s]={sum:0,studios:[]}; data.forEach(r => { const v=r.values[s]||0; tots[s].sum+=v; if(v<0) tots[s].studios.push(r.studio); }); });
+  svcs.forEach(s=>{tots[s]={sum:0,studios:[]};data.forEach(r=>{const v=r.values[s]||0;tots[s].sum+=v;if(v<0)tots[s].studios.push(r.studio);});});
   const sorted=Object.entries(tots).filter(([,v])=>v.sum<0).sort((a,b)=>a[1].sum-b[1].sum).slice(0,8);
   let ch=sorted.map(([svc,info])=>`<div class="ccard">
     <div class="csvc">${svc}</div>
     <div class="cstud">${info.studios.join(', ')}</div>
     <div class="chrs">${Math.round(info.sum)} hrs</div>
-    <div class="clbl">net deficit · ${info.studios.length} studio${info.studios.length!==1?'s':''}</div>
+    <div class="clbl">net deficit - ${info.studios.length} studio${info.studios.length!==1?'s':''}</div>
   </div>`).join('');
-  document.getElementById('c'+key).innerHTML = ch||'<div class="nodata" style="color:var(--green)">No supply constraints for this filter.</div>';
+  document.getElementById('c'+key).innerHTML=ch||'<div class="nodata" style="color:var(--green)">No supply constraints.</div>';
 
-  // Heatmap
-  const short=svcs.map(s=>{const w=s.split(' ');return w.length>2?w.slice(0,2).join(' ')+'…':s;});
+  const short=svcs.map(s=>{const w=s.split(' ');return w.length>2?w.slice(0,2).join(' ')+'...':s;});
   let hh=`<table class="hmt"><thead><tr><th>BU</th><th>Studio</th>${short.map((s,i)=>`<th title="${svcs[i]}">${s}</th>`).join('')}</tr></thead><tbody>`;
   data.forEach(r=>{
     hh+=`<tr><td><span class="buc">${r.bu}</span></td><td style="font-weight:700;color:var(--cloud)">${r.studio}</td>`;
-    svcs.forEach(s=>{const v=r.values[s]||0;const c=v<-50?'hr_':v<0?'hy_':v>30?'hg_':'hn_';hh+=`<td class="${c}">${v===0?'—':(v>0?'+':'')+Math.round(v)}</td>`;});
+    svcs.forEach(s=>{const v=r.values[s]||0;const c=v<-50?'hr_':v<0?'hy_':v>30?'hg_':'hn_';hh+=`<td class="${c}">${v===0?'--':(v>0?'+':'')+Math.round(v)}</td>`;});
     hh+='</tr>';
   });
   hh+='</tbody></table>';
-  document.getElementById('hm'+key).innerHTML = hh;
+  document.getElementById('hm'+key).innerHTML=hh;
 }
 </script>
 </body>
