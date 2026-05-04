@@ -37,7 +37,7 @@ main{padding:32px 48px 80px;max-width:1600px}
 .spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}.nodata{padding:24px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:.08em}
 /* STUDIO CARDS */
-.scards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:2px}
+.scards{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
 .scard{background:var(--surface);border:1px solid var(--border);padding:20px 22px}
 .scard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
 .scard-bu{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.scard-name{font-size:15px;font-weight:700;color:var(--cloud);margin-top:3px}
@@ -81,7 +81,7 @@ main{padding:32px 48px 80px;max-width:1600px}
 .buc{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}.stc{font-weight:700;color:var(--cloud)}
 .sf-link{color:var(--steel,#6BB5E8);text-decoration:none;font-size:11px;font-weight:600}.sf-link:hover{color:var(--lime)}
 /* WATERFALL */
-.wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px;margin-bottom:8px}
+.wf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:8px}
 .wf-card{background:var(--surface);border:1px solid var(--border);padding:18px 20px}
 .wf-title{font-size:12px;font-weight:700;color:var(--cloud);margin-bottom:14px}
 .wf-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
@@ -109,7 +109,7 @@ main{padding:32px 48px 80px;max-width:1600px}
 .role-cur-val{color:var(--muted)}.role-fcst-val{color:var(--lime)}
 .role-growth{font-size:9px;font-weight:700;width:38px;flex-shrink:0;text-align:right}
 /* UTIL BARS */
-.ub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px;margin-bottom:8px}
+.ub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:8px}
 .ub-card{background:var(--surface);border:1px solid var(--border);padding:16px 18px}
 .ub-name{font-size:12px;font-weight:700;color:var(--cloud);margin-bottom:2px}.ub-bu{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
 .ub-bar-wrap{display:flex;align-items:center;gap:10px}.ub-track{flex:1;height:8px;background:var(--border);border-radius:4px;position:relative;overflow:visible}
@@ -118,7 +118,7 @@ main{padding:32px 48px 80px;max-width:1600px}
 .ub-pill{font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;width:66px;text-align:center}
 .ub-pill.green{background:var(--green-bg);color:var(--green)}.ub-pill.yellow{background:var(--yellow-bg);color:var(--yellow)}.ub-pill.red{background:var(--red-bg);color:var(--red)}.ub-pill.grey{background:var(--surface);color:var(--muted)}
 /* ROLE UTIL CARDS */
-.rb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px;margin-bottom:8px}
+.rb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:8px}
 .rb-card{background:var(--surface);border:1px solid var(--border);padding:16px 18px}
 .rb-title{font-size:11px;font-weight:700;color:var(--cloud);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}.rb-bu{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.1em;text-transform:uppercase}
 .rb-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
@@ -1103,21 +1103,36 @@ function getSimImpact() {
     if (!impact[s.studio]) impact[s.studio] = { currentDelta:0, m1Delta:0, m2Delta:0, items:[] };
     const factor = s.prob / 100;
     const sign = s.type === 'churn' ? -1 : 1;
+    const monthly = s.type === 'boost' ? (s.amount / s.term) * factor : s.amount * factor;
+    const delta = sign * monthly;
 
-    let monthlyAmt;
+    // MRR and Churn are recurring/permanent — they affect all months from start onwards
+    // Boosters are term-limited — they only apply while term covers the forecast month
     if (s.type === 'boost') {
-      monthlyAmt = (s.amount / s.term) * factor; // amortized monthly
+      // Booster: amortized monthly amount, applies only while term covers the month
+      // month 0 = current, month 1 = M1, month 2 = M2 (relative to effective start)
+      if (s.month === 'current') {
+        impact[s.studio].currentDelta += delta;                         // month 0 of term
+        if (s.term >= 2) impact[s.studio].m1Delta += delta;            // month 1 of term
+        if (s.term >= 3) impact[s.studio].m2Delta += delta;            // month 2 of term
+      } else if (s.month === 'm1') {
+        impact[s.studio].m1Delta += delta;                              // month 0 of term
+        if (s.term >= 2) impact[s.studio].m2Delta += delta;            // month 1 of term
+      } else { // m2
+        impact[s.studio].m2Delta += delta;                              // month 0 of term
+      }
     } else {
-      monthlyAmt = s.amount * factor;
-    }
-
-    const delta = sign * monthlyAmt;
-
-    if (s.month === 'current') impact[s.studio].currentDelta += delta;
-    else if (s.month === 'm1') impact[s.studio].m1Delta += delta;
-    else if (s.month === 'm2') {
-      impact[s.studio].m1Delta += delta; // compound: m2 also shifts m1 forward
-      impact[s.studio].m2Delta += delta;
+      // New MRR and Churn are recurring/permanent from start month onwards
+      if (s.month === 'current') {
+        impact[s.studio].currentDelta += delta;
+        impact[s.studio].m1Delta += delta;
+        impact[s.studio].m2Delta += delta;
+      } else if (s.month === 'm1') {
+        impact[s.studio].m1Delta += delta;
+        impact[s.studio].m2Delta += delta;  // MRR persists into M2
+      } else { // m2
+        impact[s.studio].m2Delta += delta;
+      }
     }
     impact[s.studio].items.push(s);
   });
@@ -1174,8 +1189,17 @@ function renderSimResults() {
     // Role ratios - headcount unchanged, revenue changes
     const ams = pm(r['#AMs'])||1, pms=pm(r['#PMs'])||1, cls_=pm(r['#CLs'])||1, crs=pm(r['#Creatives'])||1;
     const baseFAM = pm(r[`Forecasted MRR / AM (${M1})`]||r['Forecasted MRR / AM (Jun)']);
-    const simFAM = simM1v / ams;
-    const ratioGrowth = baseFAM > 0 ? (simFAM - baseFAM) / baseFAM * 100 : 0;
+    const baseFPM = pm(r[`Forecasted MRR / PM (${M1})`]||r['Forecasted MRR / PM (Jun)']);
+    const baseFCL = pm(r[`Forecasted MRR / CL (${M1})`]||r['Forecasted MRR / CL (Jun)']);
+    const baseFCR = pm(r[`Forecasted MRR / Creative (${M1})`]||r['Forecasted MRR / Creative (Jun)']);
+    const simFAM = ams > 0 ? simM1v / ams : 0;
+    const simFPM = pms > 0 ? simM1v / pms : 0;
+    const simFCL = cls_ > 0 ? simM1v / cls_ : 0;
+    const simFCR = crs > 0 ? simM1v / crs : 0;
+    const ratioGrowthAM = baseFAM > 0 ? (simFAM - baseFAM) / baseFAM * 100 : 0;
+    const ratioGrowthPM = baseFPM > 0 ? (simFPM - baseFPM) / baseFPM * 100 : 0;
+    const ratioGrowthCL = baseFCL > 0 ? (simFCL - baseFCL) / baseFCL * 100 : 0;
+    const ratioGrowthCR = baseFCR > 0 ? (simFCR - baseFCR) / baseFCR * 100 : 0;
 
     const m1D = imp.m1Delta||0, m2D = imp.m2Delta||0;
 
@@ -1204,7 +1228,31 @@ function renderSimResults() {
           <div class="ssc-vals">
             <div class="ssc-base">${fm(baseFAM)}</div>
             <div class="ssc-new">${fm(simFAM)}</div>
-            <div class="ssc-delta ${ratioGrowth>=0?'pos':'neg'}">${ratioGrowth>=0?'+':''}${ratioGrowth.toFixed(0)}%</div>
+            <div class="ssc-delta ${ratioGrowthAM>=0?'pos':'neg'}">${ratioGrowthAM>=0?'+':''}${ratioGrowthAM.toFixed(0)}%</div>
+          </div>
+        </div>
+        <div class="ssc-row">
+          <div class="ssc-metric">MRR/PM (${M1})</div>
+          <div class="ssc-vals">
+            <div class="ssc-base">${fm(baseFPM)}</div>
+            <div class="ssc-new">${fm(simFPM)}</div>
+            <div class="ssc-delta ${ratioGrowthPM>=0?'pos':'neg'}">${ratioGrowthPM>=0?'+':''}${ratioGrowthPM.toFixed(0)}%</div>
+          </div>
+        </div>
+        <div class="ssc-row">
+          <div class="ssc-metric">MRR/CL (${M1})</div>
+          <div class="ssc-vals">
+            <div class="ssc-base">${fm(baseFCL)}</div>
+            <div class="ssc-new">${fm(simFCL)}</div>
+            <div class="ssc-delta ${ratioGrowthCL>=0?'pos':'neg'}">${ratioGrowthCL>=0?'+':''}${ratioGrowthCL.toFixed(0)}%</div>
+          </div>
+        </div>
+        <div class="ssc-row">
+          <div class="ssc-metric">MRR/Creative (${M1})</div>
+          <div class="ssc-vals">
+            <div class="ssc-base">${fm(baseFCR)}</div>
+            <div class="ssc-new">${fm(simFCR)}</div>
+            <div class="ssc-delta ${ratioGrowthCR>=0?'pos':'neg'}">${ratioGrowthCR>=0?'+':''}${ratioGrowthCR.toFixed(0)}%</div>
           </div>
         </div>
         <div class="ssc-row">
