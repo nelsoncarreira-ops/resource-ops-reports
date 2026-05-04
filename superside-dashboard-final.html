@@ -153,6 +153,75 @@ main{padding:32px 48px 80px;max-width:1600px}
 .ps-note{font-size:10px;color:var(--muted);margin-top:-8px;margin-bottom:14px;font-style:italic;line-height:1.5}
 .tag-dl{font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px}.tag-dl.churn{background:var(--red-bg);color:var(--red)}.tag-dl.downgrade{background:var(--yellow-bg);color:var(--yellow)}.tag-dl.inc{background:var(--green-bg);color:var(--green)}.tag-dl.boost{background:rgba(204,255,68,.15);color:var(--lime)}
 
+
+/* ── SCENARIO TAB ── */
+.sim-layout{display:grid;grid-template-columns:380px 1fr;gap:2px;align-items:start}
+.sim-builder{background:var(--surface);border:1px solid var(--border);padding:22px 24px;position:sticky;top:72px}
+.sim-builder-title{font-size:11px;font-weight:700;color:var(--cloud);letter-spacing:.04em;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.sim-clear{background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;cursor:pointer;transition:all .15s}.sim-clear:hover{border-color:var(--red);color:var(--red)}
+.sim-type-tabs{display:flex;gap:2px;margin-bottom:16px}
+.stt{flex:1;background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:7px 4px;cursor:pointer;text-align:center;transition:all .15s}.stt:hover{border-color:var(--cloud);color:var(--cloud)}
+.stt.active-mrr{background:rgba(144,224,192,.15);border-color:var(--green);color:var(--green)}
+.stt.active-boost{background:rgba(204,255,68,.12);border-color:var(--lime);color:var(--lime)}
+.stt.active-churn{background:rgba(240,112,112,.12);border-color:var(--red);color:var(--red)}
+.sim-field{margin-bottom:12px}
+.sim-label{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.sim-input,.sim-select{background:var(--pine-mid);border:1px solid var(--border-s);color:var(--cloud);font-family:"Inter Tight",sans-serif;font-size:12px;font-weight:500;padding:8px 12px;outline:none;width:100%;transition:border-color .2s}.sim-input:focus,.sim-select:focus{border-color:var(--lime)}
+.sim-select option{background:var(--pine-mid)}
+.sim-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sim-add{background:var(--lime);color:var(--pine);border:none;cursor:pointer;font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;width:100%;margin-top:4px;transition:opacity .2s}.sim-add:hover{opacity:.85}
+.sim-prob-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sim-prob-label{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.sim-prob-input{background:var(--pine-mid);border:1px solid var(--border-s);color:var(--cloud);font-family:"Inter Tight",sans-serif;font-size:12px;font-weight:500;padding:6px 10px;outline:none;width:70px;text-align:center;transition:border-color .2s}.sim-prob-input:focus{border-color:var(--lime)}
+.sim-prob-note{font-size:10px;color:var(--muted)}
+/* Scenario list */
+.sim-list{margin-top:18px;border-top:1px solid var(--border);padding-top:14px}
+.sim-list-title{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.sim-item{background:var(--pine-mid);border:1px solid var(--border);padding:10px 12px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sim-item-info{flex:1;min-width:0}
+.sim-item-label{font-size:11px;font-weight:700;color:var(--cloud);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sim-item-meta{font-size:10px;color:var(--muted);margin-top:1px}
+.sim-item-amount{font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.sim-item-amount.pos{color:var(--green)}.sim-item-amount.neg{color:var(--red)}.sim-item-amount.boost{color:var(--lime)}
+.sim-item-remove{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 4px;flex-shrink:0;transition:color .15s}.sim-item-remove:hover{color:var(--red)}
+.sim-empty{font-size:11px;color:var(--muted);text-align:center;padding:16px 0}
+/* Results panel */
+.sim-results{min-width:0}
+.sim-banner{background:rgba(204,255,68,.08);border:1px solid rgba(204,255,68,.25);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.sim-banner-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--lime)}
+.sim-banner-item{display:flex;flex-direction:column;gap:2px}
+.sim-banner-val{font-family:"Instrument Serif",serif;font-size:20px;color:var(--cloud);line-height:1}
+.sim-banner-sub{font-size:10px;font-weight:600}
+.sim-scenario-badge{font-size:9px;font-weight:700;background:rgba(204,255,68,.15);color:var(--lime);padding:2px 8px;border-radius:2px;letter-spacing:.06em;text-transform:uppercase;margin-left:6px}
+.sim-baseline-note{font-size:9px;color:var(--muted);font-style:italic}
+/* Studio impact cards */
+.sim-studio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px;margin-bottom:24px}
+.sim-studio-card{background:var(--surface);border:1px solid var(--border);padding:16px 18px}
+.ssc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ssc-name{font-size:13px;font-weight:700;color:var(--cloud)}.ssc-bu{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ssc-rows{display:flex;flex-direction:column;gap:6px}
+.ssc-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ssc-metric{font-size:10px;color:var(--muted);font-weight:500}
+.ssc-vals{display:flex;align-items:center;gap:8px}
+.ssc-base{font-size:11px;color:var(--muted);text-decoration:line-through}
+.ssc-new{font-size:12px;font-weight:700;color:var(--cloud)}
+.ssc-delta{font-size:10px;font-weight:700}.ssc-delta.pos{color:var(--green)}.ssc-delta.neg{color:var(--red)}.ssc-delta.boost{color:var(--lime)}
+.ssc-divider{height:1px;background:var(--border);margin:6px 0}
+/* Scenario waterfall */
+.sim-wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px}
+.sim-wf-card{background:var(--surface);border:1px solid var(--border);border-top:2px solid rgba(204,255,68,.4);padding:16px 18px}
+.swf-title{font-size:12px;font-weight:700;color:var(--cloud);margin-bottom:12px}
+.swf-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.swf-label{font-size:10px;color:var(--muted);width:110px;flex-shrink:0;text-align:right}
+.swf-track{flex:1;height:14px;background:var(--border);border-radius:2px;position:relative;overflow:hidden}
+.swf-fill{height:100%;border-radius:2px;position:absolute}
+.swf-fill.base{background:rgba(144,224,192,.25)}.swf-fill.loss{background:rgba(240,112,112,.45)}.swf-fill.inc{background:rgba(144,224,192,.55)}.swf-fill.boost{background:rgba(204,255,68,.25)}
+.swf-fill.total-base{background:rgba(144,224,192,.4)}.swf-fill.total-sim{background:var(--lime);opacity:.85}
+.swf-val{font-size:10px;font-weight:700;width:52px;flex-shrink:0}
+.swf-val.pos{color:var(--green)}.swf-val.neg{color:var(--red)}.swf-val.neutral{color:var(--cloud)}.swf-val.lime{color:var(--lime)}.swf-val.muted{color:var(--muted)}
+.swf-divider{height:1px;background:var(--border-s);margin:5px 0}
+.swf-scenario-row{background:rgba(204,255,68,.06);border-radius:2px;padding:2px 0}
+
 </style>
 </head>
 <body>
@@ -194,6 +263,7 @@ main{padding:32px 48px 80px;max-width:1600px}
       <button class="tbtn" data-tab="util" onclick="tab('util',this)">03 &middot; Utilization</button>
       <button class="tbtn" data-tab="cap" onclick="tab('cap',this)">04 &middot; Supply &amp; Demand</button>
       <button class="tbtn" data-tab="pipeline" onclick="tab('pipeline',this)">05 &middot; Pipeline</button>
+      <button class="tbtn" data-tab="sim" onclick="tab('sim',this)">06 &middot; What-If</button>
     </div>
 
     <!-- TAB 01 -->
@@ -292,6 +362,81 @@ main{padding:32px 48px 80px;max-width:1600px}
       </div>
     </div>
 
+
+    <!-- TAB 06 -->
+    <div id="tp-sim" class="tp">
+      <div class="eyebrow">What-if scenario model</div>
+      <div class="stitle">Simulate deal impact on forecasts</div>
+      <div class="sim-layout">
+        <!-- BUILDER -->
+        <div class="sim-builder">
+          <div class="sim-builder-title">
+            <span>Add scenario</span>
+            <button class="sim-clear" onclick="clearAllScenarios()">Clear all</button>
+          </div>
+          <div class="sim-type-tabs">
+            <button class="stt active-mrr" id="stt-mrr" onclick="setSimType('mrr')">New MRR</button>
+            <button class="stt" id="stt-boost" onclick="setSimType('boost')">Booster</button>
+            <button class="stt" id="stt-churn" onclick="setSimType('churn')">Churn</button>
+          </div>
+          <div class="sim-field">
+            <div class="sim-label">Account / label</div>
+            <input type="text" id="sim-label" class="sim-input" placeholder="e.g. Microsoft expansion">
+          </div>
+          <div class="sim-field">
+            <div class="sim-label">Studio</div>
+            <select id="sim-studio" class="sim-select">
+              <option value="">Select studio...</option>
+            </select>
+          </div>
+          <div class="sim-row">
+            <div class="sim-field">
+              <div class="sim-label" id="sim-amount-label">MRR amount ($)</div>
+              <input type="number" id="sim-amount" class="sim-input" placeholder="0">
+            </div>
+            <div class="sim-field" id="sim-term-wrap">
+              <div class="sim-label">Agreement term (mo)</div>
+              <input type="number" id="sim-term" class="sim-input" placeholder="12" value="12">
+            </div>
+          </div>
+          <div class="sim-field">
+            <div class="sim-label">Effective month</div>
+            <select id="sim-month" class="sim-select">
+              <option value="current">Current month</option>
+              <option value="m1" selected>+1 month (forecast)</option>
+              <option value="m2">+2 months (forecast)</option>
+            </select>
+          </div>
+          <div class="sim-prob-row">
+            <div class="sim-prob-label">Probability</div>
+            <input type="number" id="sim-prob" class="sim-prob-input" value="100" min="1" max="100"> 
+            <div class="sim-prob-note">% &nbsp; (100% = treat as closed)</div>
+          </div>
+          <button class="sim-add" onclick="addScenario()">+ Add to scenario</button>
+
+          <div class="sim-list">
+            <div class="sim-list-title">Active scenarios (<span id="sim-count">0</span>)</div>
+            <div id="sim-list-items"><div class="sim-empty">No scenarios added yet.</div></div>
+          </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="sim-results">
+          <div id="sim-no-scenarios" style="padding:60px;text-align:center;color:var(--muted);font-size:12px;letter-spacing:.08em">Add a scenario on the left to see the impact.</div>
+          <div id="sim-output" style="display:none">
+            <div id="sim-banner" class="sim-banner"></div>
+            <div class="sub">
+              <div class="sublabel">Impact by studio</div>
+              <div id="sim-studio-cards" class="sim-studio-grid"></div>
+            </div>
+            <div class="sub">
+              <div class="sublabel">Updated waterfall — baseline vs. scenario <span class="sim-scenario-badge">Scenario</span></div>
+              <div id="sim-wf" class="sim-wf-grid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
 <script>
@@ -507,7 +652,7 @@ async function loadAll(){
   }catch(e){console.error(e);setBadge('error','Error - retry');}
 }
 function setBadge(cls,txt){const b=document.getElementById('hbadge');b.className='hbadge '+cls;b.textContent=txt;}
-function renderAll(){if(!C.general||!C.general.length)return;rRisk();rRevenue();rUtil();rCap();rPipeline();}
+function renderAll(){if(!C.general||!C.general.length)return;rRisk();rRevenue();rUtil();rCap();rPipeline();populateSimStudios();}
 
 // ── TAB 01 - STUDIO OVERVIEW ───────────────────────────────────────────────
 function rRisk(){
@@ -843,6 +988,274 @@ function rPipeline(){
   }
   document.getElementById('lo-table').innerHTML=loH;
   document.getElementById('lo-count').textContent=`${lo.length} account${lo.length!==1?'s':''}`;
+}
+
+
+// ── SCENARIO ENGINE ───────────────────────────────────────────────────────────
+let scenarios = [];
+let simType = 'mrr';
+
+function setSimType(type) {
+  simType = type;
+  ['mrr','boost','churn'].forEach(t => {
+    const btn = document.getElementById('stt-' + t);
+    btn.className = 'stt' + (t === type ? ' active-' + t : '');
+  });
+  // Update labels
+  const amtLabel = document.getElementById('sim-amount-label');
+  const termWrap = document.getElementById('sim-term-wrap');
+  if (type === 'mrr') {
+    amtLabel.textContent = 'MRR amount ($)';
+    termWrap.style.display = 'block';
+    document.getElementById('sim-term').value = '12';
+  } else if (type === 'boost') {
+    amtLabel.textContent = 'One-off total amount ($)';
+    termWrap.style.display = 'block';
+    document.getElementById('sim-term').value = '3';
+  } else {
+    amtLabel.textContent = 'MRR at risk ($)';
+    termWrap.style.display = 'none';
+  }
+}
+
+function populateSimStudios() {
+  const sel = document.getElementById('sim-studio');
+  if (!C.general || !C.general.length) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Select studio...</option>';
+  C.general.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r['Studio'];
+    opt.textContent = r['Business Unit'] + ' · ' + r['Studio'];
+    sel.appendChild(opt);
+  });
+  if (current) sel.value = current;
+}
+
+function addScenario() {
+  const label = document.getElementById('sim-label').value.trim() || 'Unnamed scenario';
+  const studio = document.getElementById('sim-studio').value;
+  const amount = parseFloat(document.getElementById('sim-amount').value) || 0;
+  const term = parseInt(document.getElementById('sim-term').value) || 12;
+  const month = document.getElementById('sim-month').value;
+  const prob = Math.min(100, Math.max(1, parseFloat(document.getElementById('sim-prob').value) || 100));
+
+  if (!studio) { alert('Please select a studio.'); return; }
+  if (amount <= 0) { alert('Please enter an amount greater than 0.'); return; }
+
+  const id = Date.now();
+  scenarios.push({ id, type: simType, label, studio, amount, term, month, prob });
+
+  // Reset form
+  document.getElementById('sim-label').value = '';
+  document.getElementById('sim-amount').value = '';
+
+  renderSimList();
+  renderSimResults();
+}
+
+function removeScenario(id) {
+  scenarios = scenarios.filter(s => s.id !== id);
+  renderSimList();
+  renderSimResults();
+}
+
+function clearAllScenarios() {
+  scenarios = [];
+  renderSimList();
+  renderSimResults();
+}
+
+function renderSimList() {
+  document.getElementById('sim-count').textContent = scenarios.length;
+  const el = document.getElementById('sim-list-items');
+  if (!scenarios.length) {
+    el.innerHTML = '<div class="sim-empty">No scenarios added yet.</div>';
+    return;
+  }
+  el.innerHTML = scenarios.map(s => {
+    const isChurn = s.type === 'churn';
+    const isBoost = s.type === 'boost';
+    const dispAmt = isBoost ? s.amount / s.term : s.amount;
+    const sign = isChurn ? '-' : '+';
+    const cls = isChurn ? 'neg' : isBoost ? 'boost' : 'pos';
+    const typeLabel = s.type === 'mrr' ? 'New MRR' : s.type === 'boost' ? 'Booster' : 'Churn';
+    const monthLabel = s.month === 'current' ? 'Current' : s.month === 'm1' ? M1 : M2;
+    const probNote = s.prob < 100 ? ` · ${s.prob}%` : '';
+    return `<div class="sim-item">
+      <div class="sim-item-info">
+        <div class="sim-item-label">${s.label}</div>
+        <div class="sim-item-meta">${typeLabel} · ${s.studio} · ${monthLabel}${probNote}</div>
+      </div>
+      <div class="sim-item-amount ${cls}">${sign}${fm(dispAmt)}/mo</div>
+      <button class="sim-item-remove" onclick="removeScenario(${s.id})" title="Remove">&#215;</button>
+    </div>`;
+  }).join('');
+}
+
+function getSimImpact() {
+  // For each studio, compute delta per forecast month
+  // Returns: { [studio]: { m1Delta, m2Delta, currentDelta, items: [] } }
+  const impact = {};
+  if (!C.general) return impact;
+
+  scenarios.forEach(s => {
+    if (!impact[s.studio]) impact[s.studio] = { currentDelta:0, m1Delta:0, m2Delta:0, items:[] };
+    const factor = s.prob / 100;
+    const sign = s.type === 'churn' ? -1 : 1;
+
+    let monthlyAmt;
+    if (s.type === 'boost') {
+      monthlyAmt = (s.amount / s.term) * factor; // amortized monthly
+    } else {
+      monthlyAmt = s.amount * factor;
+    }
+
+    const delta = sign * monthlyAmt;
+
+    if (s.month === 'current') impact[s.studio].currentDelta += delta;
+    else if (s.month === 'm1') impact[s.studio].m1Delta += delta;
+    else if (s.month === 'm2') {
+      impact[s.studio].m1Delta += delta; // compound: m2 also shifts m1 forward
+      impact[s.studio].m2Delta += delta;
+    }
+    impact[s.studio].items.push(s);
+  });
+  return impact;
+}
+
+function renderSimResults() {
+  const noScen = document.getElementById('sim-no-scenarios');
+  const output = document.getElementById('sim-output');
+
+  if (!scenarios.length) {
+    noScen.style.display = 'block';
+    output.style.display = 'none';
+    return;
+  }
+  noScen.style.display = 'none';
+  output.style.display = 'block';
+
+  const impact = getSimImpact();
+  const affectedStudios = Object.keys(impact);
+
+  // Summary banner
+  const totalM1Delta = Object.values(impact).reduce((s,v) => s + v.m1Delta, 0);
+  const totalM2Delta = Object.values(impact).reduce((s,v) => s + v.m2Delta, 0);
+  const baseM1 = (C.general||[]).reduce((s,r) => s + pm(r[`Forecasted Revenue (${M1})`]||r['Forecasted Revenue (Jun)']), 0);
+  const baseM2 = (C.general||[]).reduce((s,r) => s + pm(r[`Forecasted Revenue (${M2})`]||r['Forecasted Revenue (Jul)']), 0);
+  const simM1 = baseM1 + totalM1Delta;
+  const simM2 = baseM2 + totalM2Delta;
+
+  document.getElementById('sim-banner').innerHTML = `
+    <div class="sim-banner-label">${scenarios.length} scenario${scenarios.length!==1?'s':''} active</div>
+    <div class="sim-banner-item">
+      <div class="sim-banner-val">${fm(simM1)}</div>
+      <div class="sim-banner-sub ${totalM1Delta>=0?'up':'dn'}">Fcst ${M1} &nbsp; ${totalM1Delta>=0?'+':''}${fm(totalM1Delta)} vs baseline</div>
+    </div>
+    <div class="sim-banner-item">
+      <div class="sim-banner-val">${fm(simM2)}</div>
+      <div class="sim-banner-sub ${totalM2Delta>=0?'up':'dn'}">Fcst ${M2} &nbsp; ${totalM2Delta>=0?'+':''}${fm(totalM2Delta)} vs baseline</div>
+    </div>
+    <div class="sim-baseline-note">Baseline: ${fm(baseM1)} (${M1}) &nbsp;·&nbsp; ${fm(baseM2)} (${M2})</div>`;
+
+  // Studio impact cards
+  const studioRows = (C.general||[]).filter(r => affectedStudios.includes(r['Studio']));
+  let scH = '';
+  studioRows.forEach(r => {
+    const s = r['Studio'], bu = r['Business Unit'];
+    const imp = impact[s] || {};
+    const baseCur = pm(r['Current MRR']);
+    const baseM1v = pm(r[`Forecasted Revenue (${M1})`]||r['Forecasted Revenue (Jun)']);
+    const baseM2v = pm(r[`Forecasted Revenue (${M2})`]||r['Forecasted Revenue (Jul)']);
+    const simM1v = baseM1v + (imp.m1Delta||0);
+    const simM2v = baseM2v + (imp.m2Delta||0);
+
+    // Role ratios - headcount unchanged, revenue changes
+    const ams = pm(r['#AMs'])||1, pms=pm(r['#PMs'])||1, cls_=pm(r['#CLs'])||1, crs=pm(r['#Creatives'])||1;
+    const baseFAM = pm(r[`Forecasted MRR / AM (${M1})`]||r['Forecasted MRR / AM (Jun)']);
+    const simFAM = simM1v / ams;
+    const ratioGrowth = baseFAM > 0 ? (simFAM - baseFAM) / baseFAM * 100 : 0;
+
+    const m1D = imp.m1Delta||0, m2D = imp.m2Delta||0;
+
+    scH += `<div class="sim-studio-card">
+      <div class="ssc-header"><div class="ssc-name">${s}</div><div class="ssc-bu">${bu}</div></div>
+      <div class="ssc-rows">
+        <div class="ssc-row">
+          <div class="ssc-metric">Fcst ${M1}</div>
+          <div class="ssc-vals">
+            <div class="ssc-base">${fm(baseM1v)}</div>
+            <div class="ssc-new">${fm(simM1v)}</div>
+            <div class="ssc-delta ${m1D>=0?'pos':'neg'}">${m1D>=0?'+':''}${fm(m1D)}</div>
+          </div>
+        </div>
+        <div class="ssc-row">
+          <div class="ssc-metric">Fcst ${M2}</div>
+          <div class="ssc-vals">
+            <div class="ssc-base">${fm(baseM2v)}</div>
+            <div class="ssc-new">${fm(simM2v)}</div>
+            <div class="ssc-delta ${m2D>=0?'pos':'neg'}">${m2D>=0?'+':''}${fm(m2D)}</div>
+          </div>
+        </div>
+        <div class="ssc-divider"></div>
+        <div class="ssc-row">
+          <div class="ssc-metric">MRR/AM (${M1})</div>
+          <div class="ssc-vals">
+            <div class="ssc-base">${fm(baseFAM)}</div>
+            <div class="ssc-new">${fm(simFAM)}</div>
+            <div class="ssc-delta ${ratioGrowth>=0?'pos':'neg'}">${ratioGrowth>=0?'+':''}${ratioGrowth.toFixed(0)}%</div>
+          </div>
+        </div>
+        <div class="ssc-row">
+          <div class="ssc-metric">Scenarios</div>
+          <div class="ssc-vals" style="flex-wrap:wrap;justify-content:flex-end;gap:4px">
+            ${(imp.items||[]).map(x => {
+              const isChurn = x.type==='churn', isBoost=x.type==='boost';
+              const cls = isChurn?'neg':isBoost?'boost':'pos';
+              const amt = isBoost ? x.amount/x.term : x.amount;
+              const sign = isChurn?'-':'+';
+              return `<span class="sim-scenario-badge" style="background:${isChurn?'var(--red-bg)':isBoost?'rgba(204,255,68,.12)':'var(--green-bg)'}; color:${isChurn?'var(--red)':isBoost?'var(--lime)':'var(--green)'}">${x.label} ${sign}${fm(amt)}</span>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('sim-studio-cards').innerHTML = scH;
+
+  // Waterfall for affected studios only
+  const maxVal = Math.max(...studioRows.map(r => {
+    const imp = impact[r['Studio']]||{};
+    const base = pm(r[`Forecasted Revenue (${M1})`]||r['Forecasted Revenue (Jun)']);
+    return Math.max(pm(r['Current MRR']), base, base + (imp.m1Delta||0));
+  }), 1);
+
+  let wfH = '';
+  studioRows.forEach(r => {
+    const s = r['Studio'], bu = r['Business Unit'];
+    const imp = impact[s] || {};
+    const cur = pm(r['Current MRR']);
+    const loss = pm(r[`Potential MRR Loss (${M1})`]||r['Potential MRR Loss (Jun)'])||0;
+    const inc = pm(r[`Incoming MRR (${M1})`]||r['Incoming MRR (Jun)'])||0;
+    const bst = pm(r[`Incoming Boosters (${M1})`]||r['Incoming Boosters (Jun)'])||0;
+    const baseFcst = pm(r[`Forecasted Revenue (${M1})`]||r['Forecasted Revenue (Jun)']);
+    const simFcst = baseFcst + (imp.m1Delta||0);
+    const simDelta = imp.m1Delta||0;
+    const sc = v => Math.min(Math.abs(v)/maxVal*100, 100);
+
+    wfH += `<div class="sim-wf-card">
+      <div class="swf-title">${s} <span style="font-size:10px;color:var(--muted);font-weight:400">${bu}</span></div>
+      <div class="swf-row"><div class="swf-label">Current MRR</div><div class="swf-track"><div class="swf-fill base" style="width:${sc(cur)}%"></div></div><div class="swf-val neutral">${fm(cur)}</div></div>
+      <div class="swf-row"><div class="swf-label">Potential loss</div><div class="swf-track">${loss<0?`<div class="swf-fill loss" style="width:${sc(loss)}%"></div>`:''}</div><div class="swf-val ${loss<0?'neg':'muted'}">${loss!==0?fm(loss):'$0'}</div></div>
+      <div class="swf-row"><div class="swf-label">Incoming MRR</div><div class="swf-track">${inc>0?`<div class="swf-fill inc" style="width:${sc(inc)}%"></div>`:''}</div><div class="swf-val ${inc>0?'pos':'muted'}">${inc!==0?'+'+fm(inc):'$0'}</div></div>
+      <div class="swf-row"><div class="swf-label">Boosters</div><div class="swf-track">${bst>0?`<div class="swf-fill boost" style="width:${sc(bst)}%"></div>`:''}</div><div class="swf-val ${bst>0?'pos':'muted'}">${bst!==0?'+'+fm(bst):'$0'}</div></div>
+      <div class="swf-divider"></div>
+      <div class="swf-row"><div class="swf-label" style="color:var(--muted)">Baseline fcst</div><div class="swf-track"><div class="swf-fill total-base" style="width:${sc(baseFcst)}%"></div></div><div class="swf-val muted">${fm(baseFcst)}</div></div>
+      <div class="swf-row swf-scenario-row"><div class="swf-label" style="color:var(--lime)">+ Scenario</div><div class="swf-track"><div class="swf-fill total-sim" style="width:${sc(simFcst)}%"></div></div><div class="swf-val lime">${fm(simFcst)} <span style="font-size:9px;font-weight:600;color:${simDelta>=0?'var(--green)':'var(--red)'}">${simDelta>=0?'+':''}${fm(simDelta)}</span></div></div>
+    </div>`;
+  });
+  document.getElementById('sim-wf').innerHTML = wfH;
 }
 
 </script>
