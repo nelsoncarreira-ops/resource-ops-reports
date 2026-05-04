@@ -6,175 +6,134 @@
 <title>Resource Operations — Superside</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
+
 :root{--pine:#0D2B24;--pine-mid:#1E4038;--pine-light:#2A5244;--cloud:#F2EDE3;--lime:#CCFF44;--red:#F07070;--red-bg:rgba(240,112,112,0.12);--yellow:#F5C842;--yellow-bg:rgba(245,200,66,0.12);--green:#90E0C0;--green-bg:rgba(144,224,192,0.12);--muted:rgba(242,237,227,0.5);--border:rgba(242,237,227,0.1);--border-s:rgba(242,237,227,0.2);--surface:rgba(255,255,255,0.04);--surface-h:rgba(255,255,255,0.07)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--pine);color:var(--cloud);font-family:"Inter Tight",sans-serif;font-weight:400;line-height:1.5;min-height:100vh}
 #gate{position:fixed;inset:0;background:var(--pine);display:flex;align-items:center;justify-content:center;z-index:999}
 .gi{display:flex;flex-direction:column;align-items:flex-start;gap:24px;width:340px}
-.g-logo{font-family:"Instrument Serif",serif;font-size:26px;color:var(--cloud);letter-spacing:-.02em}
-.g-logo span{color:var(--lime)}
+.g-logo{font-family:"Instrument Serif",serif;font-size:26px;color:var(--cloud);letter-spacing:-.02em}.g-logo span{color:var(--lime)}
 .g-sub{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:-12px}
-.g-in{background:var(--pine-mid);border:1px solid var(--border-s);color:var(--cloud);font-family:"Inter Tight",sans-serif;font-size:15px;font-weight:500;padding:14px 18px;outline:none;width:100%;letter-spacing:.06em;transition:border-color .2s}
-.g-in:focus{border-color:var(--lime)}
-.g-btn{background:var(--lime);color:var(--pine);border:none;cursor:pointer;font-family:"Inter Tight",sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:14px 24px;width:100%;transition:opacity .2s}
-.g-btn:hover{opacity:.85}
+.g-in{background:var(--pine-mid);border:1px solid var(--border-s);color:var(--cloud);font-family:"Inter Tight",sans-serif;font-size:15px;font-weight:500;padding:14px 18px;outline:none;width:100%;letter-spacing:.06em;transition:border-color .2s}.g-in:focus{border-color:var(--lime)}
+.g-btn{background:var(--lime);color:var(--pine);border:none;cursor:pointer;font-family:"Inter Tight",sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:14px 24px;width:100%;transition:opacity .2s}.g-btn:hover{opacity:.85}
 .g-err{font-size:11px;color:var(--red);display:none}
 #app{display:none}
 header{background:var(--pine-mid);border-bottom:1px solid var(--border);padding:0 48px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.hl{display:flex;align-items:center;gap:18px}
-.logo{font-family:"Instrument Serif",serif;font-size:17px;color:var(--cloud)}
-.logo span{color:var(--lime)}
-.hdiv{width:1px;height:18px;background:var(--border-s)}
-.htitle{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
-.hr2{display:flex;align-items:center;gap:16px}
-.hmeta{font-size:11px;color:var(--muted);font-weight:500}
-.hmeta strong{color:var(--lime)}
+.hl{display:flex;align-items:center;gap:18px}.logo{font-family:"Instrument Serif",serif;font-size:17px;color:var(--cloud)}.logo span{color:var(--lime)}.hdiv{width:1px;height:18px;background:var(--border-s)}.htitle{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.hr2{display:flex;align-items:center;gap:16px}.hmeta{font-size:11px;color:var(--muted);font-weight:500}.hmeta strong{color:var(--lime)}
 .hbadge{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border:1px solid}
-.hbadge.live{background:var(--green-bg);color:var(--green);border-color:rgba(144,224,192,.25)}
-.hbadge.loading{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,200,66,.25)}
-.hbadge.error{background:var(--red-bg);color:var(--red);border-color:rgba(240,112,112,.25)}
-.rbtn{background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 14px;cursor:pointer;transition:all .2s}
-.rbtn:hover{border-color:var(--lime);color:var(--lime)}
+.hbadge.live{background:var(--green-bg);color:var(--green);border-color:rgba(144,224,192,.25)}.hbadge.loading{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,200,66,.25)}.hbadge.error{background:var(--red-bg);color:var(--red);border-color:rgba(240,112,112,.25)}
+.rbtn{background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 14px;cursor:pointer;transition:all .2s}.rbtn:hover{border-color:var(--lime);color:var(--lime)}
 main{padding:32px 48px 80px;max-width:1600px}
-.fbar{display:flex;align-items:center;gap:6px;margin-bottom:24px;flex-wrap:wrap}
-.flabel{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-right:6px}
-.fbtn{background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:600;letter-spacing:.06em;padding:5px 14px;cursor:pointer;transition:all .15s}
-.fbtn:hover{border-color:var(--cloud);color:var(--cloud)}
-.fbtn.active{background:var(--lime);border-color:var(--lime);color:var(--pine)}
+.fbar{display:flex;align-items:center;gap:6px;margin-bottom:24px;flex-wrap:wrap}.flabel{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+.fbtn{background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:600;letter-spacing:.06em;padding:5px 14px;cursor:pointer;transition:all .15s}.fbtn:hover{border-color:var(--cloud);color:var(--cloud)}.fbtn.active{background:var(--lime);border-color:var(--lime);color:var(--pine)}
 .tbar{display:flex;border-bottom:1px solid var(--border);margin-bottom:32px}
-.tbtn{background:transparent;border:none;color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:14px 24px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
-.tbtn:hover{color:var(--cloud)}
-.tbtn.active{color:var(--lime);border-bottom-color:var(--lime)}
-.tp{display:none}
-.tp.active{display:block}
-.eyebrow{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--lime);display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.eyebrow::before{content:"";display:block;width:18px;height:2px;background:var(--lime)}
+.tbtn{background:transparent;border:none;color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:14px 24px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}.tbtn:hover{color:var(--cloud)}.tbtn.active{color:var(--lime);border-bottom-color:var(--lime)}
+.tp{display:none}.tp.active{display:block}
+.eyebrow{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--lime);display:flex;align-items:center;gap:10px;margin-bottom:6px}.eyebrow::before{content:"";display:block;width:18px;height:2px;background:var(--lime)}
 .stitle{font-family:"Instrument Serif",serif;font-size:24px;color:var(--cloud);letter-spacing:-.01em;margin-bottom:24px}
-.sub{margin-bottom:40px}
-.sublabel{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sub{margin-bottom:40px}.sublabel{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:16px}
 .loading{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase;gap:12px}
 .spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-.nodata{padding:24px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:.08em}
-
+@keyframes spin{to{transform:rotate(360deg)}}.nodata{padding:24px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:.08em}
 /* STUDIO CARDS */
-.scards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px;margin-bottom:8px}
+.scards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:2px}
 .scard{background:var(--surface);border:1px solid var(--border);padding:20px 22px}
-.scard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
-.scard-bu{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.scard-name{font-size:15px;font-weight:700;color:var(--cloud);margin-top:3px}
-.rdots{display:flex;gap:5px;align-items:center;padding-top:4px}
-.rdot{width:9px;height:9px;border-radius:50%}
-.rdot.red{background:var(--red)}.rdot.yellow{background:var(--yellow)}.rdot.green{background:var(--green)}.rdot.grey{background:var(--border-s)}
-.scard-mrr{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
-.mrr-block{}
-.mrr-label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.mrr-val{font-family:"Instrument Serif",serif;font-size:22px;color:var(--cloud);letter-spacing:-.02em;line-height:1}
-.mrr-delta{font-size:11px;font-weight:700;margin-top:3px}
-.mrr-delta.up{color:var(--green)}.mrr-delta.dn{color:var(--red)}.mrr-delta.flat{color:var(--muted)}
-.scard-pipeline{display:flex;gap:8px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
-.pip-tag{font-size:10px;font-weight:600;padding:3px 10px;border-radius:2px}
-.pip-tag.inc{background:var(--green-bg);color:var(--green)}
-.pip-tag.loss{background:var(--red-bg);color:var(--red)}
-.pip-tag.neutral{background:var(--surface);color:var(--muted)}
-.scard-ratios{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
-.ratio-block{}
-.ratio-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
-.ratio-val{font-size:13px;font-weight:700;color:var(--cloud)}
+.scard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.scard-bu{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.scard-name{font-size:15px;font-weight:700;color:var(--cloud);margin-top:3px}
+.rdots{display:flex;gap:5px;padding-top:4px}.rdot{width:9px;height:9px;border-radius:50%}.rdot.red{background:var(--red)}.rdot.yellow{background:var(--yellow)}.rdot.green{background:var(--green)}.rdot.grey{background:var(--border-s)}
+.scard-fcst{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.fcst-box{background:var(--surface);border:1px solid var(--border);padding:8px 10px;border-radius:2px}
+.fcst-box-label{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.fcst-box-val{font-family:"Instrument Serif",serif;font-size:17px;color:var(--cloud);letter-spacing:-.01em;line-height:1}
+.fcst-box-delta{font-size:10px;font-weight:700;margin-top:3px}.fcst-box-delta.up{color:var(--green)}.fcst-box-delta.dn{color:var(--red)}.fcst-box-delta.flat{color:var(--muted)}
+.scard-pipeline{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.pip-tag{font-size:10px;font-weight:600;padding:3px 10px;border-radius:2px;cursor:pointer;transition:opacity .15s}.pip-tag:hover{opacity:.8}
+.pip-tag.inc{background:var(--green-bg);color:var(--green)}.pip-tag.loss{background:var(--red-bg);color:var(--red)}.pip-tag.boost{background:rgba(204,255,68,.15);color:var(--lime)}.pip-tag.neutral{background:var(--surface);color:var(--muted)}
+.top2-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.top2-col{}
+.top2-col-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.top2-entry{font-size:10px;padding:3px 0;cursor:pointer;transition:color .15s}.top2-entry:hover{color:var(--lime)}
+.top2-name{color:var(--cloud);font-weight:600;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+.top2-amt{font-size:10px;font-weight:700}.top2-amt.pos{color:var(--green)}.top2-amt.neg{color:var(--red)}.top2-amt.boost{color:var(--lime)}
+.scard-ratios{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.ratio-label{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}.ratio-val{font-size:13px;font-weight:700;color:var(--cloud)}
 .scard-util{display:flex;align-items:center;gap:10px}
-.util-label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;width:60px}
+.util-label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;width:52px}
 .util-bar-track{flex:1;height:6px;background:var(--border);border-radius:3px;position:relative;overflow:visible}
-.util-bar-fill{height:100%;border-radius:3px;transition:width .5s ease}
-.util-bar-target{position:absolute;top:-3px;width:2px;height:12px;background:var(--lime);border-radius:1px}
-.util-pct{font-size:11px;font-weight:700;width:36px;text-align:right}
-.util-pill-s{font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;white-space:nowrap}
-.util-pill-s.green{background:var(--green-bg);color:var(--green)}
-.util-pill-s.yellow{background:var(--yellow-bg);color:var(--yellow)}
-.util-pill-s.red{background:var(--red-bg);color:var(--red)}
-.util-pill-s.grey{background:var(--surface);color:var(--muted)}
-
+.util-bar-fill{height:100%;border-radius:3px}.util-bar-target{position:absolute;top:-3px;width:2px;height:12px;background:var(--lime);border-radius:1px}
+.util-pct{font-size:11px;font-weight:700;width:34px;text-align:right}
+.upill{display:inline-block;padding:2px 8px;font-size:9px;font-weight:700;border-radius:2px}
+.upill.green{background:var(--green-bg);color:var(--green)}.upill.yellow{background:var(--yellow-bg);color:var(--yellow)}.upill.red{background:var(--red-bg);color:var(--red)}.upill.grey{background:var(--surface);color:var(--muted)}
 /* KPI */
 .krow{display:flex;gap:2px;margin-bottom:28px;flex-wrap:wrap}
-.kcard{background:var(--surface);border:1px solid var(--border);padding:20px 24px;flex:1;min-width:150px}
+.kcard{background:var(--surface);border:1px solid var(--border);padding:20px 24px;flex:1;min-width:130px}
 .klabel{font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.kval{font-family:"Instrument Serif",serif;font-size:28px;color:var(--cloud);letter-spacing:-.02em;line-height:1}
-.ksub{font-size:11px;font-weight:600;margin-top:4px}
+.kval{font-family:"Instrument Serif",serif;font-size:26px;color:var(--cloud);letter-spacing:-.02em;line-height:1}.ksub{font-size:11px;font-weight:600;margin-top:4px}
 .up{color:var(--green)}.dn{color:var(--red)}.warn{color:var(--yellow)}
-
 /* TABLE */
 .tw{overflow-x:auto;border:1px solid var(--border);margin-bottom:8px}
 .dt{width:100%;border-collapse:collapse;font-size:12px}
 .dt th{background:var(--pine-mid);padding:10px 14px;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:right;white-space:nowrap;border-bottom:1px solid var(--border)}
 .dt th:first-child,.dt th:nth-child(2){text-align:left}
-.dt td{padding:11px 14px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;font-weight:500}
-.dt td:first-child,.dt td:nth-child(2){text-align:left}
-.dt tr:last-child td{border-bottom:none}
-.dt tr:hover td{background:var(--surface-h)}
-.buc{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.stc{font-weight:700;color:var(--cloud)}
-
+.dt td{padding:10px 14px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;font-weight:500}
+.dt td:first-child,.dt td:nth-child(2){text-align:left}.dt tr:last-child td{border-bottom:none}.dt tr:hover td{background:var(--surface-h)}
+.buc{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}.stc{font-weight:700;color:var(--cloud)}
+.sf-link{color:var(--steel,#6BB5E8);text-decoration:none;font-size:11px;font-weight:600}.sf-link:hover{color:var(--lime)}
 /* WATERFALL */
-.wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:2px;margin-bottom:8px}
+.wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px;margin-bottom:8px}
 .wf-card{background:var(--surface);border:1px solid var(--border);padding:18px 20px}
-.wf-title{font-size:11px;font-weight:700;color:var(--cloud);margin-bottom:4px}
-.wf-sub{font-size:9px;color:var(--muted);margin-bottom:14px;letter-spacing:.06em}
-.wf-bars{display:flex;flex-direction:column;gap:6px}
-.wf-row{display:flex;align-items:center;gap:8px}
-.wf-seg-label{font-size:10px;color:var(--muted);width:100px;flex-shrink:0;text-align:right;font-weight:500}
-.wf-seg-track{flex:1;height:18px;background:var(--border);border-radius:2px;position:relative;overflow:hidden}
-.wf-seg-fill{height:100%;border-radius:2px;position:absolute;transition:width .5s ease}
-.wf-seg-fill.base{background:rgba(144,224,192,0.3)}
-.wf-seg-fill.loss{background:rgba(240,112,112,0.5)}
-.wf-seg-fill.inc{background:rgba(144,224,192,0.6)}
-.wf-seg-fill.boost{background:rgba(204,255,68,0.3)}
-.wf-seg-fill.total{background:var(--lime);opacity:.8}
-.wf-seg-val{font-size:10px;font-weight:700;width:60px;flex-shrink:0}
+.wf-title{font-size:12px;font-weight:700;color:var(--cloud);margin-bottom:14px}
+.wf-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.wf-seg-label{font-size:10px;color:var(--muted);width:110px;flex-shrink:0;text-align:right;font-weight:500}
+.wf-seg-track{flex:1;height:16px;background:var(--border);border-radius:2px;position:relative;overflow:hidden}
+.wf-seg-fill{height:100%;border-radius:2px;position:absolute}
+.wf-seg-fill.base{background:rgba(144,224,192,0.3)}.wf-seg-fill.loss{background:rgba(240,112,112,0.5)}.wf-seg-fill.inc{background:rgba(144,224,192,0.6)}.wf-seg-fill.boost{background:rgba(204,255,68,0.3)}.wf-seg-fill.total{background:var(--lime);opacity:.85}
+.wf-seg-val{font-size:10px;font-weight:700;width:56px;flex-shrink:0}
 .wf-seg-val.pos{color:var(--green)}.wf-seg-val.neg{color:var(--red)}.wf-seg-val.neutral{color:var(--cloud)}.wf-seg-val.lime{color:var(--lime)}
-.wf-divider{height:1px;background:var(--border);margin:4px 0}
-
+.wf-divider{height:1px;background:var(--border-s);margin:6px 0}
+/* ROLE CHARTS */
+.role-chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:8px}
+.role-chart-panel{background:var(--surface);border:1px solid var(--border);padding:18px 20px}
+.role-chart-title{font-size:11px;font-weight:700;color:var(--lime);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+.role-chart-legend{display:flex;gap:16px;margin-bottom:12px}
+.rcl-item{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted)}
+.rcl-dot{width:10px;height:4px;border-radius:2px}
+.role-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.role-studio{font-size:10px;color:var(--muted);width:72px;flex-shrink:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.role-bar-group{flex:1;display:flex;flex-direction:column;gap:2px}
+.role-bar-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.role-bar-fill{height:100%;border-radius:3px}
+.role-bar-fill.cur{background:rgba(144,224,192,0.35)}.role-bar-fill.fcst{background:var(--lime);opacity:.8}
+.role-vals{font-size:10px;font-weight:600;width:90px;flex-shrink:0;display:flex;flex-direction:column;gap:1px;text-align:right}
+.role-cur-val{color:var(--muted)}.role-fcst-val{color:var(--lime)}
+.role-growth{font-size:9px;font-weight:700;width:38px;flex-shrink:0;text-align:right}
 /* UTIL BARS */
-.ub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px;margin-bottom:8px}
+.ub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px;margin-bottom:8px}
 .ub-card{background:var(--surface);border:1px solid var(--border);padding:16px 18px}
-.ub-name{font-size:12px;font-weight:700;color:var(--cloud);margin-bottom:2px}
-.ub-bu{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
-.ub-bar-wrap{display:flex;align-items:center;gap:10px}
-.ub-track{flex:1;height:8px;background:var(--border);border-radius:4px;position:relative;overflow:visible}
-.ub-fill{height:100%;border-radius:4px}
-.ub-target-line{position:absolute;top:-4px;width:2px;height:16px;background:var(--lime);border-radius:1px}
-.ub-pct{font-size:13px;font-weight:700;width:40px;text-align:right}
-.ub-pill{font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;width:68px;text-align:center}
-.ub-pill.green{background:var(--green-bg);color:var(--green)}
-.ub-pill.yellow{background:var(--yellow-bg);color:var(--yellow)}
-.ub-pill.red{background:var(--red-bg);color:var(--red)}
-.ub-pill.grey{background:var(--surface);color:var(--muted)}
-
-/* ROLE BARS */
-.rb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:2px;margin-bottom:8px}
+.ub-name{font-size:12px;font-weight:700;color:var(--cloud);margin-bottom:2px}.ub-bu{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.ub-bar-wrap{display:flex;align-items:center;gap:10px}.ub-track{flex:1;height:8px;background:var(--border);border-radius:4px;position:relative;overflow:visible}
+.ub-fill{height:100%;border-radius:4px}.ub-target-line{position:absolute;top:-4px;width:2px;height:16px;background:var(--lime);border-radius:1px}
+.ub-pct{font-size:13px;font-weight:700;width:38px;text-align:right}
+.ub-pill{font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;width:66px;text-align:center}
+.ub-pill.green{background:var(--green-bg);color:var(--green)}.ub-pill.yellow{background:var(--yellow-bg);color:var(--yellow)}.ub-pill.red{background:var(--red-bg);color:var(--red)}.ub-pill.grey{background:var(--surface);color:var(--muted)}
+/* ROLE UTIL CARDS */
+.rb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px;margin-bottom:8px}
 .rb-card{background:var(--surface);border:1px solid var(--border);padding:16px 18px}
-.rb-title{font-size:11px;font-weight:700;color:var(--cloud);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-.rb-bu{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.rb-title{font-size:11px;font-weight:700;color:var(--cloud);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}.rb-bu{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.1em;text-transform:uppercase}
 .rb-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .rb-role{font-size:10px;color:var(--muted);width:80px;flex-shrink:0;font-weight:500}
 .rb-track{flex:1;height:6px;background:var(--border);border-radius:3px;position:relative;overflow:visible}
-.rb-fill{height:100%;border-radius:3px}
-.rb-target-line{position:absolute;top:-3px;width:2px;height:12px;background:var(--lime);border-radius:1px}
+.rb-fill{height:100%;border-radius:3px}.rb-target-line{position:absolute;top:-3px;width:2px;height:12px;background:var(--lime);border-radius:1px}
 .rb-pct{font-size:10px;font-weight:700;width:32px;text-align:right}
 .rb-stat{font-size:9px;font-weight:700;padding:1px 6px;border-radius:2px;width:60px;text-align:center}
-.rb-stat.green{background:var(--green-bg);color:var(--green)}
-.rb-stat.yellow{background:var(--yellow-bg);color:var(--yellow)}
-.rb-stat.red{background:var(--red-bg);color:var(--red)}
-.rb-stat.grey{background:var(--surface);color:var(--muted)}
-
+.rb-stat.green{background:var(--green-bg);color:var(--green)}.rb-stat.yellow{background:var(--yellow-bg);color:var(--yellow)}.rb-stat.red{background:var(--red-bg);color:var(--red)}.rb-stat.grey{background:var(--surface);color:var(--muted)}
 /* FLAGS */
 .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px}
 .fcard{background:var(--surface);border:1px solid var(--border);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
 .fcard.over{border-left:3px solid var(--red)}.fcard.under{border-left:3px solid var(--yellow)}
-.fname{font-size:12px;font-weight:700;color:var(--cloud)}
-.fsub{font-size:10px;color:var(--muted);margin-top:2px}
-.factual{font-size:15px;font-weight:700;text-align:right}
-.fcard.over .factual{color:var(--red)}.fcard.under .factual{color:var(--yellow)}
-.ftgt{font-size:10px;color:var(--muted);text-align:right;margin-top:1px}
-
+.fname{font-size:12px;font-weight:700;color:var(--cloud)}.fsub{font-size:10px;color:var(--muted);margin-top:2px}
+.factual{font-size:15px;font-weight:700;text-align:right}.fcard.over .factual{color:var(--red)}.fcard.under .factual{color:var(--yellow)}.ftgt{font-size:10px;color:var(--muted);text-align:right;margin-top:1px}
 /* HEATMAP */
 .hw{overflow-x:auto;margin-bottom:8px}
 .hmt{border-collapse:collapse;font-size:11px;white-space:nowrap}
@@ -182,18 +141,18 @@ main{padding:32px 48px 80px;max-width:1600px}
 .hmt th:first-child,.hmt th:nth-child(2){text-align:left;min-width:90px}
 .hmt td{padding:7px 9px;text-align:center;font-weight:600;border:1px solid var(--border);min-width:64px;font-size:10px}
 .hmt td:first-child,.hmt td:nth-child(2){text-align:left;min-width:80px}
-.hr_{background:rgba(240,112,112,.22);color:var(--red)}
-.hy_{background:rgba(245,200,66,.14);color:var(--yellow)}
-.hg_{background:rgba(144,224,192,.1);color:var(--green)}
-.hn_{color:var(--muted)}
-
+.hr_{background:rgba(240,112,112,.22);color:var(--red)}.hy_{background:rgba(245,200,66,.14);color:var(--yellow)}.hg_{background:rgba(144,224,192,.1);color:var(--green)}.hn_{color:var(--muted)}
 /* CONSTRAINTS */
 .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:2px;margin-bottom:24px}
 .ccard{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--red);padding:16px 18px}
-.csvc{font-size:11px;font-weight:700;color:var(--cloud);margin-bottom:5px}
-.cstud{font-size:10px;color:var(--muted);margin-bottom:10px;line-height:1.5}
-.chrs{font-size:20px;font-weight:700;color:var(--red);line-height:1}
-.clbl{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+.csvc{font-size:11px;font-weight:700;color:var(--cloud);margin-bottom:5px}.cstud{font-size:10px;color:var(--muted);margin-bottom:10px;line-height:1.5}.chrs{font-size:20px;font-weight:700;color:var(--red);line-height:1}.clbl{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+/* TAB 05 */
+.pipeline-section{margin-bottom:40px}
+.ps-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.ps-title{font-size:13px;font-weight:700;color:var(--cloud)}.ps-count{font-size:11px;color:var(--muted)}
+.ps-note{font-size:10px;color:var(--muted);margin-top:-8px;margin-bottom:14px;font-style:italic;line-height:1.5}
+.tag-dl{font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px}.tag-dl.churn{background:var(--red-bg);color:var(--red)}.tag-dl.downgrade{background:var(--yellow-bg);color:var(--yellow)}.tag-dl.inc{background:var(--green-bg);color:var(--green)}.tag-dl.boost{background:rgba(204,255,68,.15);color:var(--lime)}
+
 </style>
 </head>
 <body>
@@ -206,7 +165,6 @@ main{padding:32px 48px 80px;max-width:1600px}
     <button class="g-btn" onclick="checkPwd()">Enter dashboard</button>
   </div>
 </div>
-
 <div id="app">
   <header>
     <div class="hl">
@@ -221,7 +179,6 @@ main{padding:32px 48px 80px;max-width:1600px}
       <button class="rbtn" onclick="loadAll()">&#8635; Refresh</button>
     </div>
   </header>
-
   <main>
     <div class="fbar">
       <span class="flabel">Filter by BU</span>
@@ -232,51 +189,44 @@ main{padding:32px 48px 80px;max-width:1600px}
       <button class="fbtn" onclick="setF('Bloom',this)">Bloom</button>
     </div>
     <div class="tbar">
-      <button class="tbtn active" onclick="tab('risk',this)">01 &middot; Studio Overview</button>
-      <button class="tbtn" onclick="tab('rev',this)">02 &middot; Revenue</button>
-      <button class="tbtn" onclick="tab('util',this)">03 &middot; Utilization</button>
-      <button class="tbtn" onclick="tab('cap',this)">04 &middot; Supply &amp; Demand</button>
+      <button class="tbtn active" data-tab="risk" onclick="tab('risk',this)">01 &middot; Studio Overview</button>
+      <button class="tbtn" data-tab="rev" onclick="tab('rev',this)">02 &middot; Revenue</button>
+      <button class="tbtn" data-tab="util" onclick="tab('util',this)">03 &middot; Utilization</button>
+      <button class="tbtn" data-tab="cap" onclick="tab('cap',this)">04 &middot; Supply &amp; Demand</button>
+      <button class="tbtn" data-tab="pipeline" onclick="tab('pipeline',this)">05 &middot; Pipeline</button>
     </div>
 
+    <!-- TAB 01 -->
     <div id="tp-risk" class="tp active">
       <div class="eyebrow">Studio snapshot</div>
       <div class="stitle">Revenue, pipeline &amp; utilization at a glance</div>
       <div class="sub">
-        <div class="sublabel">Dots: Revenue risk &middot; Utilization &middot; Capacity &nbsp;|&nbsp; Lime line on bar = target</div>
+        <div class="sublabel">3 dots: Revenue risk &middot; Utilization &middot; Capacity &nbsp;|&nbsp; Pipeline tags are clickable &rarr; Tab 05 &nbsp;|&nbsp; Lime line = target</div>
         <div id="scards" class="scards"><div class="loading"><div class="spin"></div>Fetching data...</div></div>
       </div>
     </div>
 
+    <!-- TAB 02 -->
     <div id="tp-rev" class="tp">
       <div class="eyebrow">Monthly recurring revenue</div>
       <div class="stitle">Revenue &amp; pipeline by studio</div>
       <div id="krow" class="krow"></div>
       <div class="sub">
-        <div class="sublabel">MRR waterfall by studio &mdash; current MRR, losses, incoming, boosters, forecasted</div>
+        <div class="sublabel">MRR waterfall by studio &mdash; always 4 buckets, $0 shown when no movement</div>
         <div id="wf-cards" class="wf-grid"></div>
       </div>
       <div class="sub">
-        <div class="sublabel">MRR flow &mdash; full table</div>
-        <div class="tw"><table class="dt"><thead><tr>
-          <th>BU</th><th>Studio</th><th>Current MRR</th><th>Boosters</th><th>Current Rev</th>
-          <th>Potential Loss</th><th>Incoming MRR</th><th>Forecasted Rev</th><th>Delta</th>
-        </tr></thead><tbody id="revbody"></tbody></table></div>
-      </div>
-      <div class="sub">
-        <div class="sublabel">MRR efficiency ratios &mdash; current &rarr; forecasted</div>
-        <div class="tw"><table class="dt"><thead><tr>
-          <th>BU</th><th>Studio</th>
-          <th>MRR/AM</th><th>Fcst</th><th>MRR/PM</th><th>Fcst</th>
-          <th>MRR/CL</th><th>Fcst</th><th>MRR/Creative</th><th>Fcst</th>
-        </tr></thead><tbody id="effbody"></tbody></table></div>
+        <div class="sublabel">Revenue per role &mdash; current vs. forecasted across studios</div>
+        <div id="role-charts" class="role-chart-grid"></div>
       </div>
     </div>
 
+    <!-- TAB 03 -->
     <div id="tp-util" class="tp">
       <div class="eyebrow">Billable utilization only</div>
       <div class="stitle">Utilization by studio, role &amp; staff</div>
       <div class="sub">
-        <div class="sublabel">Studio level &mdash; target 75&ndash;85% billable &nbsp;|&nbsp; Lime line = target</div>
+        <div class="sublabel">Studio level &mdash; target 75&ndash;85% billable &nbsp;|&nbsp; Lime line = target (80%)</div>
         <div id="ub-cards" class="ub-grid"></div>
       </div>
       <div class="sub">
@@ -289,6 +239,7 @@ main{padding:32px 48px 80px;max-width:1600px}
       </div>
     </div>
 
+    <!-- TAB 04 -->
     <div id="tp-cap" class="tp">
       <div class="eyebrow">Demand x Supply (hours)</div>
       <div class="stitle">Service capacity by studio</div>
@@ -297,7 +248,7 @@ main{padding:32px 48px 80px;max-width:1600px}
         <div id="cexec" class="cgrid"></div>
       </div>
       <div class="sub">
-        <div class="sublabel">Execution heatmap &mdash; surplus / deficit hours per studio</div>
+        <div class="sublabel">Execution heatmap</div>
         <div class="hw"><div id="hmexec"></div></div>
       </div>
       <div class="sub">
@@ -309,15 +260,53 @@ main{padding:32px 48px 80px;max-width:1600px}
         <div class="hw"><div id="hmqc"></div></div>
       </div>
     </div>
+
+    <!-- TAB 05 -->
+    <div id="tp-pipeline" class="tp">
+      <div class="eyebrow">Pipeline detail</div>
+      <div class="stitle">Incoming accounts, boosters &amp; potential losses</div>
+
+      <div id="sec-incoming" class="pipeline-section">
+        <div class="ps-header">
+          <div class="ps-title">Incoming opportunities</div>
+          <div class="ps-count" id="inc-count">--</div>
+        </div>
+        <div id="inc-table"><div class="loading"><div class="spin"></div>Loading...</div></div>
+      </div>
+
+      <div id="sec-boosters" class="pipeline-section">
+        <div class="ps-header">
+          <div class="ps-title">Active boosters</div>
+          <div class="ps-count" id="bo-count">--</div>
+        </div>
+        <div class="ps-note">One-off amount represents the total divided by the agreement term, allocated across dates based on that term.</div>
+        <div id="bo-table"><div class="loading"><div class="spin"></div>Loading...</div></div>
+      </div>
+
+      <div id="sec-losses" class="pipeline-section">
+        <div class="ps-header">
+          <div class="ps-title">Potential MRR loss</div>
+          <div class="ps-count" id="lo-count">--</div>
+        </div>
+        <div id="lo-table"><div class="loading"><div class="spin"></div>Loading...</div></div>
+      </div>
+    </div>
+
   </main>
 </div>
-
 <script>
+
 const PWD='SS2026';
 const SID='12Co2djnGChEnjzVWJC2mIdr87_7XOakUZl3UvyourV8';
-const GIDS={general:'442756387',studioUtil:'623235244',roleUtil:'891907132',staffUtil:'1935053064',execDS:'760717385',qcDS:'827721452'};
+const GIDS={
+  general:'442756387',studioUtil:'623235244',roleUtil:'891907132',
+  staffUtil:'1935053064',execDS:'760717385',qcDS:'827721452',
+  incomingOpps:'408922156',boosters:'2109082626',losses:'457964922'
+};
 const REFRESH_MS=6*60*60*1000;
 let C={};let AF='All';
+// Dynamic month labels extracted from column headers
+let M1='Next',M2='+2 mo';
 
 function checkPwd(){
   if(document.getElementById('pwd').value===PWD){
@@ -330,8 +319,7 @@ document.getElementById('pwd').addEventListener('keydown',e=>{if(e.key==='Enter'
 
 async function fetchSheet(gid){
   const url=`https://docs.google.com/spreadsheets/d/${SID}/export?format=csv&gid=${gid}`;
-  const r=await fetch(url);
-  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+  const r=await fetch(url);if(!r.ok)throw new Error(`HTTP ${r.status}`);
   return parseCSV(await r.text());
 }
 function parseCSV(t){
@@ -342,70 +330,83 @@ function parseCSV(t){
     for(let i=0;i<line.length;i++){
       const c=line[i];
       if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
-      else if(c===','&&!inQ){cols.push(cur.trim());cur='';}
-      else cur+=c;
+      else if(c===','&&!inQ){cols.push(cur.trim());cur='';}else cur+=c;
     }
     cols.push(cur.trim());rows.push(cols);
   }
   return rows;
 }
 
+// ── PARSERS ────────────────────────────────────────────────────────────────
 function findHdr(rows,kw){for(let i=0;i<rows.length;i++){if(rows[i].some(c=>c&&c.toLowerCase().includes(kw)))return i;}return 0;}
 function pm(s){if(s===null||s===undefined||s==='')return 0;s=String(s).replace(/,/g,'').replace(/[$]/g,'').trim();const neg=s.startsWith('-')||s.startsWith('(');s=s.replace(/[^0-9.]/g,'');return neg?-(parseFloat(s)||0):(parseFloat(s)||0);}
 function pp(s){if(s===null||s===undefined||s==='')return null;const v=parseFloat(String(s).replace('%','').trim());return isNaN(v)?null:v;}
-function fm(n,decimals=0){n=parseFloat(n)||0;const a=Math.abs(n),sg=n<0?'-':'';if(a>=1e6)return sg+'$'+(a/1e6).toFixed(1)+'M';if(a>=1000)return sg+'$'+Math.round(a/1000)+'K';return sg+'$'+a.toFixed(decimals);}
+function fm(n){n=parseFloat(n)||0;const a=Math.abs(n),sg=n<0?'-':'';if(a>=1e6)return sg+'$'+(a/1e6).toFixed(1)+'M';if(a>=1000)return sg+'$'+Math.round(a/1000)+'K';return sg+'$'+Math.round(a);}
+function trunc(s,n){return s&&s.length>n?s.slice(0,n)+'…':s||'';}
+function formatDate(s){
+  if(!s)return '--';const pts=s.split('/');if(pts.length<3)return s;
+  const mos=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return (mos[parseInt(pts[0])-1]||'')+' '+pts[2];
+}
 
 function parseGeneral(rows){
   if(!rows||rows.length<2)return[];
-  const hi=findHdr(rows,'business unit');const hdr=rows[hi];
+  const hi=findHdr(rows,'business unit');
+  const hdr=rows[hi];
+  // Extract dynamic month labels from column headers
+  const fRevCols=hdr.filter(h=>h.includes('Forecasted Revenue ('));
+  M1=fRevCols[0]?.match(/\(([^)]+)\)/)?.[1]||'Next';
+  M2=fRevCols[1]?.match(/\(([^)]+)\)/)?.[1]||'+2';
+  // Find current month date from "Current month" row
+  let cmDate=null;
+  for(const row of rows.slice(hi+1)){
+    if(row[0]&&row[0].toLowerCase().includes('current month')){
+      cmDate=row[1]||'';break;
+    }
+  }
+  if(cmDate){
+    const p=cmDate.split('/');
+    if(p.length>=3)C._currentMonthDate=new Date(parseInt(p[2]),parseInt(p[0])-1,1);
+    document.getElementById('hperiod').textContent=formatDate(cmDate);
+  }
   return rows.slice(hi+1).filter(r=>r[0]&&r[1]&&!r[0].toLowerCase().includes('month'))
     .map(r=>{const o={};hdr.forEach((h,i)=>o[h.trim()]=r[i]||'');return o;});
 }
+
 function parseStudioUtil(rows){
   if(!rows||rows.length<2)return[];
   const hi=findHdr(rows,'business unit');const h=rows[hi].map(x=>x.toLowerCase());
-  const bui=h.findIndex(x=>x.includes('business unit'));
-  const si=h.findIndex(x=>x.includes('studio'));
-  const bi=h.findIndex(x=>x.includes('billable'));
+  const bui=h.findIndex(x=>x.includes('business unit'));const si=h.findIndex(x=>x.includes('studio'));const bi=h.findIndex(x=>x.includes('billable'));
   if(bui<0||si<0||bi<0)return[];
   const BUS=['Earth','Evergreen','Sky','Bloom'];
-  return rows.slice(hi+1).filter(r=>r[bui]&&BUS.includes(r[bui].trim()))
-    .map(r=>({bu:r[bui].trim(),studio:r[si].trim(),billable:pp(r[bi])}));
+  return rows.slice(hi+1).filter(r=>r[bui]&&BUS.includes(r[bui].trim())).map(r=>({bu:r[bui].trim(),studio:r[si].trim(),billable:pp(r[bi])}));
 }
 function parseRoleUtil(rows){
   if(!rows||rows.length<2)return[];
   const hi=findHdr(rows,'business unit');const h=rows[hi].map(x=>x.toLowerCase());
-  const bui=h.findIndex(x=>x.includes('business unit'));
-  const si=h.findIndex(x=>x.includes('studio'));
+  const bui=h.findIndex(x=>x.includes('business unit'));const si=h.findIndex(x=>x.includes('studio'));
   const ri=h.findIndex(x=>x.includes('functional group')||(x.includes('role')&&!x.includes('studio')));
   const bi=h.findIndex(x=>x.includes('billable'));
-  if(bui<0||si<0||ri<0||bi<0)return[];
-  const BUS=['Earth','Evergreen','Sky','Bloom'];
-  return rows.slice(hi+1).filter(r=>r[bui]&&BUS.includes(r[bui].trim()))
-    .map(r=>({bu:r[bui].trim(),studio:r[si].trim(),role:r[ri].trim(),billable:pp(r[bi])}));
+  if(bui<0||si<0||ri<0||bi<0)return[];const BUS=['Earth','Evergreen','Sky','Bloom'];
+  return rows.slice(hi+1).filter(r=>r[bui]&&BUS.includes(r[bui].trim())).map(r=>({bu:r[bui].trim(),studio:r[si].trim(),role:r[ri].trim(),billable:pp(r[bi])}));
 }
 function parseStaffUtil(rows){
   if(!rows||rows.length<2)return[];
   const hi=findHdr(rows,'username');const h=rows[hi].map(x=>x.toLowerCase());
-  const ni=h.findIndex(x=>x.includes('username'));
-  const bui=h.findIndex(x=>x.includes('business unit'));
-  const si=h.findIndex(x=>x.includes('studio'));
+  const ni=h.findIndex(x=>x.includes('username'));const bui=h.findIndex(x=>x.includes('business unit'));const si=h.findIndex(x=>x.includes('studio'));
   const ri=h.findIndex(x=>x.includes('functional group')||(x.includes('role')&&!x.includes('studio')));
-  const bi=h.findIndex(x=>x.includes('billable')&&!x.includes('target'));
-  const ti=h.findIndex(x=>x.includes('target'));
-  if(ni<0||bui<0||bi<0||ti<0)return[];
-  const BUS=['Earth','Evergreen','Sky','Bloom'];
-  return rows.slice(hi+1).filter(r=>r[ni]&&r[bui]&&BUS.includes(r[bui].trim()))
-    .map(r=>{let tgt=pp(r[ti]);if(tgt!==null&&tgt>0&&tgt<=1)tgt=tgt*100;return{name:r[ni].trim(),bu:r[bui].trim(),studio:r[si]?r[si].trim():'',role:r[ri]?r[ri].trim():'',billable:pp(r[bi]),target:tgt};});
+  const bi=h.findIndex(x=>x.includes('billable')&&!x.includes('target'));const ti=h.findIndex(x=>x.includes('target'));
+  if(ni<0||bui<0||bi<0||ti<0)return[];const BUS=['Earth','Evergreen','Sky','Bloom'];
+  return rows.slice(hi+1).filter(r=>r[ni]&&r[bui]&&BUS.includes(r[bui].trim())).map(r=>{
+    let tgt=pp(r[ti]);if(tgt!==null&&tgt>0&&tgt<=1)tgt=tgt*100;
+    return{name:r[ni].trim(),bu:r[bui].trim(),studio:r[si]?r[si].trim():'',role:r[ri]?r[ri].trim():'',billable:pp(r[bi]),target:tgt};
+  });
 }
 function parseDS(rows){
   if(!rows||rows.length<2)return{services:[],data:[]};
-  const hi=findHdr(rows,'item');const hdr=rows[hi];
-  const services=hdr.slice(3).filter(s=>s&&s.trim());
-  const data=[];
+  const hi=findHdr(rows,'item');const hdr=rows[hi];const services=hdr.slice(3).filter(s=>s&&s.trim());const data=[];
   rows.slice(hi+1).forEach(r=>{
-    if(!r[0])return;
-    const item=String(r[0]).toLowerCase();
+    if(!r[0])return;const item=String(r[0]).toLowerCase();
     if(item.includes('demand x supply')&&item.includes('hours')){
       const row={bu:(r[1]||'').trim(),studio:(r[2]||'').trim(),values:{}};
       services.forEach((s,j)=>{const raw=r[j+3];row.values[s.trim()]=(raw!==undefined&&raw!=='')?pm(raw):0;});
@@ -414,55 +415,151 @@ function parseDS(rows){
   });
   return{services:services.map(s=>s.trim()),data};
 }
+function parseIncomingOpps(rows){
+  if(!rows||rows.length<2)return[];
+  const hi=findHdr(rows,'date billing');const hdr=rows[hi].map(h=>h.toLowerCase());
+  // Col indices: 0=date, 1=accId, 2=accName, 3=bu, 4=studio, 5=tz, 6=type, 7=stage, 8=netMRR, 9=oneOff, 10=term, 11=services, 12=link
+  return rows.slice(hi+1).filter(r=>r[0]&&r[2]&&pm(r[8])>0).map(r=>({
+    date:r[0]||'',accountId:r[1]||'',accountName:r[2]||'',bu:r[3]||'',studio:r[4]||'',
+    tz:r[5]||'',type:r[6]||'',stage:r[7]||'',netMRR:pm(r[8]),oneOff:pm(r[9]),
+    term:r[10]||'',services:r[11]||'',link:r[12]||''
+  })).sort((a,b)=>b.netMRR-a.netMRR);
+}
+function parseReportingDate(s){
+  if(!s)return null;
+  const mos={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  const pts=s.split('/');if(pts.length<2)return null;
+  const mon=mos[pts[0]];const yr=parseInt('20'+pts[1]);
+  if(mon===undefined||isNaN(yr))return null;
+  return new Date(yr,mon,1);
+}
+function parseBoosters(rows){
+  if(!rows||rows.length<2)return[];
+  const hi=findHdr(rows,'reporting date');
+  const curDate=C._currentMonthDate||new Date();
+  return rows.slice(hi+1).filter(r=>{
+    if(!r[0]||!r[2])return false;
+    const d=parseReportingDate(r[0]);
+    return d&&d>=curDate;
+  }).map(r=>({
+    reportingDate:r[0]||'',accountId:r[1]||'',accountName:r[2]||'',bu:r[3]||'',studio:r[4]||'',
+    tz:r[5]||'',type:r[6]||'',stage:r[7]||'',netMRR:pm(r[8]),oneOff:pm(r[9]),
+    closedDate:r[10]||'',term:r[11]||'',services:r[12]||'',totalRevChange:pm(r[13]),
+    incomingRev:r[14]||'',oppId:r[15]||'',link:r[16]||''
+  })).sort((a,b)=>b.oneOff-a.oneOff);
+}
+function parseLosses(rows){
+  if(!rows||rows.length<2)return[];
+  const hi=findHdr(rows,'date billing');
+  return rows.slice(hi+1).filter(r=>r[0]&&r[2]).map(r=>({
+    date:r[0]||'',accountId:r[1]||'',accountName:r[2]||'',downgradeOrChurn:r[3]||'',
+    bu:r[4]||'',studio:r[5]||'',lossStage:r[6]||'',forecastedMRR:pm(r[7]),
+    oldMRR:pm(r[8]),renewalMRR:pm(r[9])
+  })).sort((a,b)=>a.forecastedMRR-b.forecastedMRR);
+}
 
+// ── THRESHOLDS ─────────────────────────────────────────────────────────────
 function stSt(b){if(b===null)return'grey';if(b>=75&&b<=85)return'green';if((b>=65&&b<75)||(b>85&&b<=95))return'yellow';return'red';}
 function rlSt(role,b){if(b===null)return'grey';const t={Creative:[80,90],'Creative Leader':[75,85],PM:[75,85],CL:[75,85],AM:[45,55],Producer:[75,85]}[role]||[75,85];if(b>=t[0]&&b<=t[1])return'green';if(b>=t[0]-10&&b<=t[1]+10)return'yellow';return'red';}
 function rlTgt(role){return{Creative:85,'Creative Leader':80,PM:80,CL:80,AM:50,Producer:80}[role]||80;}
 const pillLbl=s=>s==='green'?'On target':s==='yellow'?'Watch':'Off target';
 
+// ── FILTER + TABS ──────────────────────────────────────────────────────────
 function filt(arr,key='bu'){return AF==='All'?arr:arr.filter(r=>r[key]===AF);}
+function filtStr(arr,key='bu'){return AF==='All'?arr:arr.filter(r=>r[key]===AF);}
 function setF(bu,el){AF=bu;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderAll();}
-function tab(name,el){document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('tp-'+name).classList.add('active');}
+function tab(name,el){
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  if(el)el.classList.add('active');
+  else document.querySelectorAll('.tbtn').forEach(b=>{if(b.dataset.tab===name)b.classList.add('active');});
+  document.getElementById('tp-'+name).classList.add('active');
+}
+function gotoTab(name,section){
+  // Switch to tab programmatically
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  const btn=document.querySelector(`[data-tab="${name}"]`);
+  if(btn)btn.classList.add('active');
+  document.getElementById('tp-'+name).classList.add('active');
+  if(section){setTimeout(()=>{const el=document.getElementById(section);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},100);}
+}
 
+// ── LOAD ───────────────────────────────────────────────────────────────────
 async function loadAll(){
   setBadge('loading','Loading...');
   try{
-    const[g,su,ru,sf,ex,qc]=await Promise.all([fetchSheet(GIDS.general),fetchSheet(GIDS.studioUtil),fetchSheet(GIDS.roleUtil),fetchSheet(GIDS.staffUtil),fetchSheet(GIDS.execDS),fetchSheet(GIDS.qcDS)]);
-    C={general:parseGeneral(g),studioUtil:parseStudioUtil(su),roleUtil:parseRoleUtil(ru),staffUtil:parseStaffUtil(sf),execDS:parseDS(ex),qcDS:parseDS(qc)};
-    let period='April 2026';
-    for(const row of g.slice(1)){for(const cell of row){if(cell&&/\d{1,2}\/\d{1,2}\/\d{4}/.test(cell)){period=cell;break;}}}
-    document.getElementById('hperiod').textContent=period;
+    const[g,su,ru,sf,ex,qc,io,bo,lo]=await Promise.all([
+      fetchSheet(GIDS.general),fetchSheet(GIDS.studioUtil),fetchSheet(GIDS.roleUtil),
+      fetchSheet(GIDS.staffUtil),fetchSheet(GIDS.execDS),fetchSheet(GIDS.qcDS),
+      fetchSheet(GIDS.incomingOpps),fetchSheet(GIDS.boosters),fetchSheet(GIDS.losses)
+    ]);
+    C={
+      general:parseGeneral(g), // sets M1,M2,_currentMonthDate,hperiod
+      studioUtil:parseStudioUtil(su),roleUtil:parseRoleUtil(ru),staffUtil:parseStaffUtil(sf),
+      execDS:parseDS(ex),qcDS:parseDS(qc),
+      incomingOpps:parseIncomingOpps(io),
+      boosters:parseBoosters(bo),
+      losses:parseLosses(lo)
+    };
     document.getElementById('hrefresh').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
     setBadge('live','Live');renderAll();
   }catch(e){console.error(e);setBadge('error','Error - retry');}
 }
 function setBadge(cls,txt){const b=document.getElementById('hbadge');b.className='hbadge '+cls;b.textContent=txt;}
-function renderAll(){if(!C.general||!C.general.length)return;rRisk();rRevenue();rUtil();rCap();}
+function renderAll(){if(!C.general||!C.general.length)return;rRisk();rRevenue();rUtil();rCap();rPipeline();}
 
-// ── RISK / STUDIO OVERVIEW ────────────────────────────────────────────────────
+// ── TAB 01 - STUDIO OVERVIEW ───────────────────────────────────────────────
 function rRisk(){
   const rows=filt(C.general,'Business Unit');
   if(!rows.length){document.getElementById('scards').innerHTML='<div class="nodata">No data.</div>';return;}
-  // Max MRR for scale
-  const maxMRR=Math.max(...rows.map(r=>pm(r['Current MRR'])));
+  // Build studio lookup maps for top2
+  const incByStudio={},boByStudio={},loByStudio={};
+  C.incomingOpps.forEach(r=>{if(!incByStudio[r.studio])incByStudio[r.studio]=[];incByStudio[r.studio].push(r);});
+  C.boosters.forEach(r=>{if(!boByStudio[r.studio])boByStudio[r.studio]=[];boByStudio[r.studio].push(r);});
+  C.losses.forEach(r=>{if(!loByStudio[r.studio])loByStudio[r.studio]=[];loByStudio[r.studio].push(r);});
+
   let h='';
   rows.forEach(r=>{
     const bu=r['Business Unit'],studio=r['Studio'];
-    const cur=pm(r['Current MRR']),fcst=pm(r['Forecasted Revenue']);
-    const loss=pm(r['Potential MRR Loss']),inc=pm(r['Incoming MRR']),bst=pm(r['Current Boosters']);
-    const delta=fcst-cur,pct=cur?(delta/cur*100):0;
-    const revSt=pct<-10?'red':pct<0?'yellow':'green';
+    const cur=pm(r['Current MRR']);
+    const fcstJun=pm(r[`Forecasted Revenue (${M1})`])||pm(r['Forecasted Revenue (Jun)'])||0;
+    const fcstJul=pm(r[`Forecasted Revenue (${M2})`])||pm(r['Forecasted Revenue (Jul)'])||0;
+    const lossJun=pm(r[`Potential MRR Loss (${M1})`])||pm(r['Potential MRR Loss (Jun)'])||0;
+    const incJun=pm(r[`Incoming MRR (${M1})`])||pm(r['Incoming MRR (Jun)'])||0;
+    const bstJun=pm(r[`Incoming Boosters (${M1})`])||pm(r['Incoming Boosters (Jun)'])||0;
+    const pctJun=cur?(fcstJun-cur)/cur*100:0;
+    const pctJul=cur?(fcstJul-cur)/cur*100:0;
+    const revSt=pctJun<-10?'red':pctJun<0?'yellow':'green';
     const su=C.studioUtil.find(u=>u.studio===studio);
     const bill=su?su.billable:null;const utSt=stSt(bill);
     const dr=C.execDS.data.find(d=>d.studio===studio);
     let capSt='green';
     if(dr){const neg=Object.values(dr.values).filter(v=>v<-30).length;capSt=neg>=4?'red':neg>=2?'yellow':'green';}
-    // Ratios
     const rAM=pm(r['Current MRR / AM']),rPM=pm(r['Current MRR / PM']),rCL=pm(r['Current MRR / CL']),rCR=pm(r['Current MRR / Creative']);
-    // Target bar (80% target for studio)
-    const tgtPct=80;
-    const barPct=bill!==null?Math.min(bill,120):0;
-    const barColor=utSt==='green'?'var(--green)':utSt==='yellow'?'var(--yellow)':'var(--red)';
+    const barCol=utSt==='green'?'var(--green)':utSt==='yellow'?'var(--yellow)':'var(--red)';
+    const barPct=bill!==null?Math.min(bill,120)/1.2:0;
+
+    // Top 2 entries
+    const top2Inc=(incByStudio[studio]||[]).slice(0,2);
+    const top2Bo=(boByStudio[studio]||[]).slice(0,2);
+    const top2Lo=(loByStudio[studio]||[]).slice(0,2);
+
+    const top2IncH=top2Inc.map(x=>`<div class="top2-entry" onclick="gotoTab('pipeline','sec-incoming')">
+      <div class="top2-name">${trunc(x.accountName,18)}</div>
+      <div class="top2-amt pos">+${fm(x.netMRR)}</div>
+    </div>`).join('')||'<div style="font-size:10px;color:var(--muted)">—</div>';
+
+    const top2BoH=top2Bo.map(x=>`<div class="top2-entry" onclick="gotoTab('pipeline','sec-boosters')">
+      <div class="top2-name">${trunc(x.accountName,18)}</div>
+      <div class="top2-amt boost">+${fm(x.oneOff)}</div>
+    </div>`).join('')||'<div style="font-size:10px;color:var(--muted)">—</div>';
+
+    const top2LoH=top2Lo.map(x=>`<div class="top2-entry" onclick="gotoTab('pipeline','sec-losses')">
+      <div class="top2-name">${trunc(x.accountName,18)}</div>
+      <div class="top2-amt neg">${fm(x.forecastedMRR)}</div>
+    </div>`).join('')||'<div style="font-size:10px;color:var(--muted)">—</div>';
+
     h+=`<div class="scard">
       <div class="scard-top">
         <div><div class="scard-bu">${bu}</div><div class="scard-name">${studio}</div></div>
@@ -472,144 +569,148 @@ function rRisk(){
           <div class="rdot ${capSt}" title="Capacity"></div>
         </div>
       </div>
-      <div class="scard-mrr">
-        <div class="mrr-block">
-          <div class="mrr-label">Current MRR</div>
-          <div class="mrr-val">${fm(cur)}</div>
+      <div class="scard-fcst">
+        <div class="fcst-box">
+          <div class="fcst-box-label">Current MRR</div>
+          <div class="fcst-box-val">${fm(cur)}</div>
         </div>
-        <div class="mrr-block">
-          <div class="mrr-label">Forecasted</div>
-          <div class="mrr-val">${fm(fcst)}</div>
-          <div class="mrr-delta ${pct>=0?'up':'dn'}">${pct>=0?'+':''}${pct.toFixed(1)}%</div>
+        <div class="fcst-box">
+          <div class="fcst-box-label">Fcst ${M1}</div>
+          <div class="fcst-box-val">${fm(fcstJun)}</div>
+          <div class="fcst-box-delta ${pctJun>=0?'up':'dn'}">${pctJun>=0?'+':''}${pctJun.toFixed(1)}%</div>
+        </div>
+        <div class="fcst-box">
+          <div class="fcst-box-label">Fcst ${M2}</div>
+          <div class="fcst-box-val">${fm(fcstJul)}</div>
+          <div class="fcst-box-delta ${pctJul>=0?'up':'dn'}">${pctJul>=0?'+':''}${pctJul.toFixed(1)}%</div>
         </div>
       </div>
       <div class="scard-pipeline">
-        ${inc>0?`<span class="pip-tag inc">+${fm(inc)} in</span>`:''}
-        ${loss<0?`<span class="pip-tag loss">${fm(loss)} at risk</span>`:''}
-        ${bst>0?`<span class="pip-tag inc">+${fm(bst)} boost</span>`:''}
-        ${inc===0&&loss===0&&bst===0?'<span class="pip-tag neutral">No pipeline movement</span>':''}
+        ${incJun>0?`<span class="pip-tag inc" onclick="gotoTab('pipeline','sec-incoming')">+${fm(incJun)} in</span>`:''}
+        ${lossJun<0?`<span class="pip-tag loss" onclick="gotoTab('pipeline','sec-losses')">${fm(lossJun)} at risk</span>`:''}
+        ${bstJun>0?`<span class="pip-tag boost" onclick="gotoTab('pipeline','sec-boosters')">+${fm(bstJun)} boost</span>`:''}
+        ${incJun===0&&lossJun===0&&bstJun===0?'<span class="pip-tag neutral">No pipeline movement</span>':''}
+      </div>
+      <div class="top2-grid">
+        <div class="top2-col"><div class="top2-col-label">Incoming</div>${top2IncH}</div>
+        <div class="top2-col"><div class="top2-col-label">Boosters</div>${top2BoH}</div>
+        <div class="top2-col"><div class="top2-col-label">At risk</div>${top2LoH}</div>
       </div>
       <div class="scard-ratios">
-        <div class="ratio-block"><div class="ratio-label">MRR/AM</div><div class="ratio-val">${rAM>0?fm(rAM):'N/A'}</div></div>
-        <div class="ratio-block"><div class="ratio-label">MRR/PM</div><div class="ratio-val">${rPM>0?fm(rPM):'N/A'}</div></div>
-        <div class="ratio-block"><div class="ratio-label">MRR/CL</div><div class="ratio-val">${rCL>0?fm(rCL):'N/A'}</div></div>
-        <div class="ratio-block"><div class="ratio-label">MRR/Creative</div><div class="ratio-val">${rCR>0?fm(rCR):'N/A'}</div></div>
+        <div><div class="ratio-label">MRR/AM</div><div class="ratio-val">${rAM>0?fm(rAM):'N/A'}</div></div>
+        <div><div class="ratio-label">MRR/PM</div><div class="ratio-val">${rPM>0?fm(rPM):'N/A'}</div></div>
+        <div><div class="ratio-label">MRR/CL</div><div class="ratio-val">${rCL>0?fm(rCL):'N/A'}</div></div>
+        <div><div class="ratio-label">MRR/Creative</div><div class="ratio-val">${rCR>0?fm(rCR):'N/A'}</div></div>
       </div>
       <div class="scard-util">
         <div class="util-label">Billable</div>
         <div class="util-bar-track">
-          <div class="util-bar-fill" style="width:${barPct/1.2}%;background:${barColor}"></div>
-          <div class="util-bar-target" style="left:${tgtPct/1.2}%"></div>
+          <div class="util-bar-fill" style="width:${barPct}%;background:${barCol}"></div>
+          <div class="util-bar-target" style="left:${80/1.2}%"></div>
         </div>
         <div class="util-pct ${utSt}">${bill!==null?bill+'%':'--'}</div>
-        <span class="util-pill-s ${utSt}">${pillLbl(utSt)}</span>
+        <span class="upill ${utSt}">${pillLbl(utSt)}</span>
       </div>
     </div>`;
   });
   document.getElementById('scards').innerHTML=h;
 }
 
-// ── REVENUE ───────────────────────────────────────────────────────────────────
+// ── TAB 02 - REVENUE ───────────────────────────────────────────────────────
 function rRevenue(){
   const rows=filt(C.general,'Business Unit');
   const tC=rows.reduce((s,r)=>s+pm(r['Current MRR']),0);
-  const tF=rows.reduce((s,r)=>s+pm(r['Forecasted Revenue']),0);
-  const tL=rows.reduce((s,r)=>s+pm(r['Potential MRR Loss']),0);
-  const tI=rows.reduce((s,r)=>s+pm(r['Incoming MRR']),0);
+  const tL=rows.reduce((s,r)=>s+pm(r[`Potential MRR Loss (${M1})`]||r['Potential MRR Loss (Jun)']),0);
+  const tI=rows.reduce((s,r)=>s+pm(r[`Incoming MRR (${M1})`]||r['Incoming MRR (Jun)']),0);
+  const tB=rows.reduce((s,r)=>s+pm(r[`Incoming Boosters (${M1})`]||r['Incoming Boosters (Jun)']),0);
+  const tF=rows.reduce((s,r)=>s+pm(r[`Forecasted Revenue (${M1})`]||r['Forecasted Revenue (Jun)']),0);
   const d=tF-tC;
   document.getElementById('krow').innerHTML=`
     <div class="kcard"><div class="klabel">Total Current MRR</div><div class="kval">${fm(tC)}</div></div>
-    <div class="kcard"><div class="klabel">Forecasted Revenue</div><div class="kval">${fm(tF)}</div><div class="ksub ${d>=0?'up':'dn'}">${d>=0?'+':''}${fm(d)} vs current</div></div>
+    <div class="kcard"><div class="klabel">Potential MRR Loss</div><div class="kval dn">${fm(tL)}</div></div>
     <div class="kcard"><div class="klabel">Incoming MRR</div><div class="kval up">${fm(tI)}</div></div>
-    <div class="kcard"><div class="klabel">Potential MRR Loss</div><div class="kval dn">${fm(tL)}</div></div>`;
+    <div class="kcard"><div class="klabel">Boosters</div><div class="kval" style="color:var(--lime)">${fm(tB)}</div></div>
+    <div class="kcard"><div class="klabel">Forecasted Revenue (${M1})</div><div class="kval">${fm(tF)}</div><div class="ksub ${d>=0?'up':'dn'}">${d>=0?'+':''}${fm(d)} vs current</div></div>`;
 
-  // Waterfall cards
-  const maxVal=Math.max(...rows.map(r=>Math.max(pm(r['Current MRR']),pm(r['Forecasted Revenue']))));
+  // Waterfall - always 4 buckets
+  const maxVal=Math.max(...rows.map(r=>Math.max(pm(r['Current MRR']),pm(r[`Forecasted Revenue (${M1})`]||r['Forecasted Revenue (Jun)']))));
   let wh='';
   rows.forEach(r=>{
-    const cur=pm(r['Current MRR']),fcst=pm(r['Forecasted Revenue']);
-    const loss=pm(r['Potential MRR Loss']),inc=pm(r['Incoming MRR']),bst=pm(r['Current Boosters']);
-    const pct=cur?(fcst-cur)/cur*100:0;
-    const scale=v=>Math.min(Math.abs(v)/maxVal*100,100);
+    const cur=pm(r['Current MRR']);
+    const fcst=pm(r[`Forecasted Revenue (${M1})`]||r['Forecasted Revenue (Jun)'])||0;
+    const loss=pm(r[`Potential MRR Loss (${M1})`]||r['Potential MRR Loss (Jun)'])||0;
+    const inc=pm(r[`Incoming MRR (${M1})`]||r['Incoming MRR (Jun)'])||0;
+    const bst=pm(r[`Incoming Boosters (${M1})`]||r['Incoming Boosters (Jun)'])||0;
+    const scale=v=>maxVal>0?Math.min(Math.abs(v)/maxVal*100,100):0;
     wh+=`<div class="wf-card">
-      <div class="wf-title">${r['Studio']}</div>
-      <div class="wf-sub">${r['Business Unit']} &middot; ${pct>=0?'+':''}${pct.toFixed(1)}% vs current</div>
-      <div class="wf-bars">
-        <div class="wf-row">
-          <div class="wf-seg-label">Current MRR</div>
-          <div class="wf-seg-track"><div class="wf-seg-fill base" style="width:${scale(cur)}%"></div></div>
-          <div class="wf-seg-val neutral">${fm(cur)}</div>
-        </div>
-        ${loss<0?`<div class="wf-row">
-          <div class="wf-seg-label">Potential loss</div>
-          <div class="wf-seg-track"><div class="wf-seg-fill loss" style="width:${scale(loss)}%"></div></div>
-          <div class="wf-seg-val neg">${fm(loss)}</div>
-        </div>`:''}
-        ${inc>0?`<div class="wf-row">
-          <div class="wf-seg-label">Incoming MRR</div>
-          <div class="wf-seg-track"><div class="wf-seg-fill inc" style="width:${scale(inc)}%"></div></div>
-          <div class="wf-seg-val pos">+${fm(inc)}</div>
-        </div>`:''}
-        ${bst>0?`<div class="wf-row">
-          <div class="wf-seg-label">Boosters</div>
-          <div class="wf-seg-track"><div class="wf-seg-fill boost" style="width:${scale(bst)}%"></div></div>
-          <div class="wf-seg-val pos">+${fm(bst)}</div>
-        </div>`:''}
+      <div class="wf-title">${r['Studio']} <span style="font-size:10px;color:var(--muted);font-weight:400;margin-left:6px">${r['Business Unit']}</span></div>
+      <div class="wf-rows">
+        <div class="wf-row"><div class="wf-seg-label">Current MRR</div><div class="wf-seg-track"><div class="wf-seg-fill base" style="width:${scale(cur)}%"></div></div><div class="wf-seg-val neutral">${fm(cur)}</div></div>
+        <div class="wf-row"><div class="wf-seg-label">Potential loss</div><div class="wf-seg-track">${loss<0?`<div class="wf-seg-fill loss" style="width:${scale(loss)}%"></div>`:''}</div><div class="wf-seg-val ${loss<0?'neg':'neutral'}">${loss!==0?fm(loss):'$0'}</div></div>
+        <div class="wf-row"><div class="wf-seg-label">Incoming MRR</div><div class="wf-seg-track">${inc>0?`<div class="wf-seg-fill inc" style="width:${scale(inc)}%"></div>`:''}</div><div class="wf-seg-val ${inc>0?'pos':'neutral'}">${inc!==0?'+'+fm(inc):'$0'}</div></div>
+        <div class="wf-row"><div class="wf-seg-label">Boosters</div><div class="wf-seg-track">${bst>0?`<div class="wf-seg-fill boost" style="width:${scale(bst)}%"></div>`:''}</div><div class="wf-seg-val ${bst>0?'pos':'neutral'}">${bst!==0?'+'+fm(bst):'$0'}</div></div>
         <div class="wf-divider"></div>
-        <div class="wf-row">
-          <div class="wf-seg-label">Forecasted</div>
-          <div class="wf-seg-track"><div class="wf-seg-fill total" style="width:${scale(fcst)}%"></div></div>
-          <div class="wf-seg-val lime">${fm(fcst)}</div>
-        </div>
+        <div class="wf-row"><div class="wf-seg-label">Forecasted</div><div class="wf-seg-track"><div class="wf-seg-fill total" style="width:${scale(fcst)}%"></div></div><div class="wf-seg-val lime">${fm(fcst)}</div></div>
       </div>
     </div>`;
   });
   document.getElementById('wf-cards').innerHTML=wh||'<div class="nodata">No data</div>';
 
-  // Table
-  let rh='',eh='';
-  rows.forEach(r=>{
-    const cur=pm(r['Current MRR']),fcst=pm(r['Forecasted Revenue']);
-    const loss=pm(r['Potential MRR Loss']),inc=pm(r['Incoming MRR']),bst=pm(r['Current Boosters']);
-    const dv=fcst-cur,pct=cur?(dv/cur*100):0;
-    rh+=`<tr>
-      <td><span class="buc">${r['Business Unit']}</span></td><td><span class="stc">${r['Studio']}</span></td>
-      <td>${fm(cur)}</td><td>${bst>0?fm(bst):'--'}</td><td>${fm(pm(r['Current Revenue']))}</td>
-      <td class="${loss<0?'dn':'warn'}">${loss!==0?fm(loss):'--'}</td>
-      <td class="${inc>0?'up':''}">${inc>0?'+'+fm(inc):'--'}</td>
-      <td>${fm(fcst)}</td>
-      <td class="${pct>=0?'up':'dn'}">${pct>=0?'+':''}${pct.toFixed(1)}%</td>
-    </tr>`;
-    const vs=[pm(r['Current MRR / AM']),pm(r['Forecasted MRR / AM']),pm(r['Current MRR / PM']),pm(r['Forecasted MRR / PM']),
-              pm(r['Current MRR / CL']),pm(r['Forecasted MRR / CL']),pm(r['Current MRR / Creative']),pm(r['Forecasted MRR / Creative'])];
-    eh+=`<tr>
-      <td><span class="buc">${r['Business Unit']}</span></td><td><span class="stc">${r['Studio']}</span></td>
-      <td>${fm(vs[0])}</td><td class="${vs[1]>=vs[0]?'up':'dn'}">${fm(vs[1])}</td>
-      <td>${fm(vs[2])}</td><td class="${vs[3]>=vs[2]?'up':'dn'}">${fm(vs[3])}</td>
-      <td>${fm(vs[4])}</td><td class="${vs[5]>=vs[4]?'up':'dn'}">${fm(vs[5])}</td>
-      <td>${fm(vs[6])}</td><td class="${vs[7]>=vs[6]?'up':'dn'}">${fm(vs[7])}</td>
-    </tr>`;
+  // Role comparison charts - one panel per role, all studios as rows
+  const roles=[
+    {key:'AM',cur:'Current MRR / AM',fcst:`Forecasted MRR / AM (${M1})`},
+    {key:'PM',cur:'Current MRR / PM',fcst:`Forecasted MRR / PM (${M1})`},
+    {key:'CL',cur:'Current MRR / CL',fcst:`Forecasted MRR / CL (${M1})`},
+    {key:'Creative',cur:'Current MRR / Creative',fcst:`Forecasted MRR / Creative (${M1})`}
+  ];
+  let rcH='';
+  roles.forEach(role=>{
+    const vals=rows.map(r=>({
+      studio:r['Studio'],
+      cur:pm(r[role.cur]),
+      fcst:pm(r[role.fcst])||pm(r[role.fcst.replace(M1,'Jun')])||0
+    })).filter(x=>x.cur>0||x.fcst>0).sort((a,b)=>b.fcst-a.fcst);
+    const maxV=Math.max(...vals.flatMap(x=>[x.cur,x.fcst]),1);
+    rcH+=`<div class="role-chart-panel">
+      <div class="role-chart-title">Revenue / ${role.key}</div>
+      <div class="role-chart-legend">
+        <div class="rcl-item"><div class="rcl-dot" style="background:rgba(144,224,192,0.4)"></div>Current</div>
+        <div class="rcl-item"><div class="rcl-dot" style="background:var(--lime);opacity:.8"></div>Forecasted (${M1})</div>
+      </div>`;
+    vals.forEach(x=>{
+      const curW=x.cur/maxV*100,fcstW=x.fcst/maxV*100;
+      const gr=x.cur>0?(x.fcst-x.cur)/x.cur*100:0;
+      rcH+=`<div class="role-row">
+        <div class="role-studio">${x.studio}</div>
+        <div class="role-bar-group">
+          <div class="role-bar-track"><div class="role-bar-fill cur" style="width:${curW}%"></div></div>
+          <div class="role-bar-track"><div class="role-bar-fill fcst" style="width:${fcstW}%"></div></div>
+        </div>
+        <div class="role-vals">
+          <div class="role-cur-val">${fm(x.cur)}</div>
+          <div class="role-fcst-val">${fm(x.fcst)}</div>
+        </div>
+        <div class="role-growth ${gr>=0?'up':'dn'}">${gr>=0?'+':''}${gr.toFixed(0)}%</div>
+      </div>`;
+    });
+    rcH+='</div>';
   });
-  document.getElementById('revbody').innerHTML=rh||'<tr><td colspan="9" class="nodata">No data</td></tr>';
-  document.getElementById('effbody').innerHTML=eh||'<tr><td colspan="10" class="nodata">No data</td></tr>';
+  document.getElementById('role-charts').innerHTML=rcH;
 }
 
-// ── UTILIZATION ───────────────────────────────────────────────────────────────
+// ── TAB 03 - UTILIZATION ──────────────────────────────────────────────────
 function rUtil(){
-  // Studio bar cards
   const stRows=filt(C.studioUtil);
   let ubh='';
   stRows.forEach(r=>{
     const b=r.billable,st=stSt(b);
-    const tgt=80,barW=b!==null?Math.min(b,120)/1.2:0;
     const col=st==='green'?'var(--green)':st==='yellow'?'var(--yellow)':'var(--red)';
     ubh+=`<div class="ub-card">
-      <div class="ub-name">${r.studio}</div>
-      <div class="ub-bu">${r.bu}</div>
+      <div class="ub-name">${r.studio}</div><div class="ub-bu">${r.bu}</div>
       <div class="ub-bar-wrap">
         <div class="ub-track">
-          <div class="ub-fill" style="width:${barW}%;background:${col}"></div>
-          <div class="ub-target-line" style="left:${tgt/1.2}%"></div>
+          <div class="ub-fill" style="width:${b!==null?Math.min(b,120)/1.2:0}%;background:${col}"></div>
+          <div class="ub-target-line" style="left:${80/1.2}%"></div>
         </div>
         <div class="ub-pct ${st}">${b!==null?b+'%':'--'}</div>
         <div class="ub-pill ${st}">${pillLbl(st)}</div>
@@ -618,26 +719,18 @@ function rUtil(){
   });
   document.getElementById('ub-cards').innerHTML=ubh||'<div class="nodata">No data</div>';
 
-  // Role bar cards - group by studio
   const rlRows=filt(C.roleUtil);
-  const byStudio={};
-  rlRows.forEach(r=>{
-    const k=r.bu+'|'+r.studio;
-    if(!byStudio[k])byStudio[k]={bu:r.bu,studio:r.studio,roles:[]};
-    byStudio[k].roles.push(r);
-  });
+  const byStudio={};rlRows.forEach(r=>{const k=r.bu+'|'+r.studio;if(!byStudio[k])byStudio[k]={bu:r.bu,studio:r.studio,roles:[]};byStudio[k].roles.push(r);});
   let rbh='';
   Object.values(byStudio).forEach(s=>{
-    rbh+=`<div class="rb-card">
-      <div class="rb-title"><span>${s.studio}</span><span class="rb-bu">${s.bu}</span></div>`;
+    rbh+=`<div class="rb-card"><div class="rb-title"><span>${s.studio}</span><span class="rb-bu">${s.bu}</span></div>`;
     s.roles.forEach(r=>{
       const b=r.billable,tgt=rlTgt(r.role),st=rlSt(r.role,b);
-      const barW=b!==null?Math.min(b,120)/1.2:0;
       const col=st==='green'?'var(--green)':st==='yellow'?'var(--yellow)':'var(--red)';
       rbh+=`<div class="rb-row">
         <div class="rb-role">${r.role}</div>
         <div class="rb-track">
-          <div class="rb-fill" style="width:${barW}%;background:${col}"></div>
+          <div class="rb-fill" style="width:${b!==null?Math.min(b,120)/1.2:0}%;background:${col}"></div>
           <div class="rb-target-line" style="left:${tgt/1.2}%"></div>
         </div>
         <div class="rb-pct ${st}">${b!==null?b+'%':'--'}</div>
@@ -648,13 +741,9 @@ function rUtil(){
   });
   document.getElementById('rb-cards').innerHTML=rbh||'<div class="nodata">No data</div>';
 
-  // Individual flags
-  const flagged=filt(C.staffUtil).filter(p=>{
-    const b=p.billable,t=p.target;
-    return b!==null&&t!==null&&t!==0&&Math.abs(b-t)>t*0.25;
-  }).sort((a,b)=>Math.abs(b.billable-b.target)-Math.abs(a.billable-a.target));
+  const flagged=filt(C.staffUtil).filter(p=>p.billable!==null&&p.target!==null&&p.target!==0&&Math.abs(p.billable-p.target)>p.target*0.25).sort((a,b)=>Math.abs(b.billable-b.target)-Math.abs(a.billable-a.target));
   let fh='';
-  if(!flagged.length){fh='<div class="nodata">No individuals flagged for this filter.</div>';}
+  if(!flagged.length)fh='<div class="nodata">No individuals flagged.</div>';
   else flagged.forEach(p=>{
     const type=p.billable>p.target?'over':'under';
     fh+=`<div class="fcard ${type}">
@@ -665,43 +754,19 @@ function rUtil(){
   document.getElementById('fgrid').innerHTML=fh;
 }
 
-// ── CAPACITY ──────────────────────────────────────────────────────────────────
+// ── TAB 04 - CAPACITY ─────────────────────────────────────────────────────
 function rCap(){rDS(C.execDS,'exec');rDS(C.qcDS,'qc');}
 function rDS(ds,key){
   if(!ds||!ds.data)return;
   const data=filt(ds.data),svcs=ds.services||[];
-
-  // FIXED: show services where ANY studio has deficit, sorted by worst individual value
   const svcInfo={};
-  svcs.forEach(s=>{
-    svcInfo[s]={deficitStudios:[],worstVal:0,totalDeficit:0};
-    data.forEach(r=>{
-      const v=r.values[s]||0;
-      if(v<0){
-        svcInfo[s].deficitStudios.push({studio:r.studio,val:v});
-        svcInfo[s].totalDeficit+=v;
-        if(v<svcInfo[s].worstVal)svcInfo[s].worstVal=v;
-      }
-    });
-  });
-
-  const constrained=Object.entries(svcInfo)
-    .filter(([s,info])=>info.deficitStudios.length>0)
-    .sort((a,b)=>a[1].worstVal-b[1].worstVal)
-    .slice(0,10);
-
+  svcs.forEach(s=>{svcInfo[s]={deficitStudios:[],worstVal:0};data.forEach(r=>{const v=r.values[s]||0;if(v<0){svcInfo[s].deficitStudios.push({studio:r.studio,val:v});if(v<svcInfo[s].worstVal)svcInfo[s].worstVal=v;}});});
+  const constrained=Object.entries(svcInfo).filter(([,i])=>i.deficitStudios.length>0).sort((a,b)=>a[1].worstVal-b[1].worstVal).slice(0,10);
   let ch=constrained.map(([svc,info])=>{
     const studios=info.deficitStudios.sort((a,b)=>a.val-b.val).map(x=>`${x.studio} (${Math.round(x.val)}h)`);
-    return`<div class="ccard">
-      <div class="csvc">${svc}</div>
-      <div class="cstud">${studios.join(', ')}</div>
-      <div class="chrs">${Math.round(info.worstVal)} hrs</div>
-      <div class="clbl">worst single studio &middot; ${info.deficitStudios.length} affected</div>
-    </div>`;
+    return`<div class="ccard"><div class="csvc">${svc}</div><div class="cstud">${studios.join(', ')}</div><div class="chrs">${Math.round(info.worstVal)} hrs</div><div class="clbl">worst studio &middot; ${info.deficitStudios.length} affected</div></div>`;
   }).join('');
   document.getElementById('c'+key).innerHTML=ch||'<div class="nodata" style="color:var(--green)">No supply constraints for this filter.</div>';
-
-  // Heatmap
   const short=svcs.map(s=>{const w=s.split(' ');return w.length>2?w.slice(0,2).join(' ')+'...':s;});
   let hh=`<table class="hmt"><thead><tr><th>BU</th><th>Studio</th>${short.map((s,i)=>`<th title="${svcs[i]}">${s}</th>`).join('')}</tr></thead><tbody>`;
   data.forEach(r=>{
@@ -712,6 +777,74 @@ function rDS(ds,key){
   hh+='</tbody></table>';
   document.getElementById('hm'+key).innerHTML=hh;
 }
+
+// ── TAB 05 - PIPELINE ─────────────────────────────────────────────────────
+function rPipeline(){
+  // Incoming Opps
+  const inc=filtStr(C.incomingOpps,'bu');
+  let incH='';
+  if(!inc.length)incH='<div class="nodata">No incoming opportunities for this filter.</div>';
+  else{
+    incH=`<div class="tw"><table class="dt"><thead><tr>
+      <th>Date</th><th>Account</th><th>BU</th><th>Studio</th><th>Stage</th><th>Net MRR</th><th>One-off</th><th>Term</th><th>Services</th><th>Link</th>
+    </tr></thead><tbody>${inc.map(x=>`<tr>
+      <td>${x.date}</td><td style="text-align:left;font-weight:700;color:var(--cloud)">${x.accountName}</td>
+      <td style="text-align:left"><span class="buc">${x.bu}</span></td>
+      <td style="text-align:left">${x.studio}</td>
+      <td style="text-align:left"><span class="tag-dl inc">${x.stage}</span></td>
+      <td class="up">+${fm(x.netMRR)}</td>
+      <td>${x.oneOff>0?'+'+fm(x.oneOff):'--'}</td>
+      <td>${x.term||'--'}</td>
+      <td style="text-align:left;max-width:160px;white-space:normal;font-size:11px">${x.services||'--'}</td>
+      <td>${x.link?`<a class="sf-link" href="${x.link}" target="_blank">&#8599;</a>`:'--'}</td>
+    </tr>`).join('')}</tbody></table></div>`;
+  }
+  document.getElementById('inc-table').innerHTML=incH;
+  document.getElementById('inc-count').textContent=`${inc.length} account${inc.length!==1?'s':''}`;
+
+  // Boosters
+  const bo=filtStr(C.boosters,'bu');
+  let boH='';
+  if(!bo.length)boH='<div class="nodata">No active boosters for this filter.</div>';
+  else{
+    boH=`<div class="tw"><table class="dt"><thead><tr>
+      <th>Reporting Date</th><th>Account</th><th>BU</th><th>Studio</th><th>Stage</th><th>One-off Amount</th><th>Term</th><th>Services</th><th>Link</th>
+    </tr></thead><tbody>${bo.map(x=>`<tr>
+      <td>${x.reportingDate}</td><td style="text-align:left;font-weight:700;color:var(--cloud)">${x.accountName}</td>
+      <td style="text-align:left"><span class="buc">${x.bu}</span></td>
+      <td style="text-align:left">${x.studio}</td>
+      <td style="text-align:left"><span class="tag-dl boost">${x.stage}</span></td>
+      <td style="color:var(--lime)">+${fm(x.oneOff)}</td>
+      <td>${x.term||'--'}</td>
+      <td style="text-align:left;max-width:160px;white-space:normal;font-size:11px">${x.services||'--'}</td>
+      <td>${x.link?`<a class="sf-link" href="${x.link}" target="_blank">&#8599;</a>`:'--'}</td>
+    </tr>`).join('')}</tbody></table></div>`;
+  }
+  document.getElementById('bo-table').innerHTML=boH;
+  document.getElementById('bo-count').textContent=`${bo.length} account${bo.length!==1?'s':''}`;
+
+  // Potential Losses
+  const lo=filtStr(C.losses,'bu');
+  let loH='';
+  if(!lo.length)loH='<div class="nodata">No potential losses for this filter.</div>';
+  else{
+    loH=`<div class="tw"><table class="dt"><thead><tr>
+      <th>Date</th><th>Account</th><th>Type</th><th>BU</th><th>Studio</th><th>Stage</th><th>Forecasted Change</th><th>Current MRR</th><th>Renewal MRR</th>
+    </tr></thead><tbody>${lo.map(x=>`<tr>
+      <td>${x.date}</td><td style="text-align:left;font-weight:700;color:var(--cloud)">${x.accountName}</td>
+      <td style="text-align:left"><span class="tag-dl ${x.downgradeOrChurn==='Churn'?'churn':'downgrade'}">${x.downgradeOrChurn}</span></td>
+      <td style="text-align:left"><span class="buc">${x.bu}</span></td>
+      <td style="text-align:left">${x.studio}</td>
+      <td style="text-align:left;font-size:11px">${x.lossStage}</td>
+      <td class="dn">${fm(x.forecastedMRR)}</td>
+      <td>${fm(x.oldMRR)}</td>
+      <td>${fm(x.renewalMRR)}</td>
+    </tr>`).join('')}</tbody></table></div>`;
+  }
+  document.getElementById('lo-table').innerHTML=loH;
+  document.getElementById('lo-count').textContent=`${lo.length} account${lo.length!==1?'s':''}`;
+}
+
 </script>
 </body>
 </html>
