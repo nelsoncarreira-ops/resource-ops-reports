@@ -74,10 +74,10 @@ main{padding:32px 48px 80px;max-width:1600px}
 /* TABLE */
 .tw{overflow-x:auto;border:1px solid var(--border);margin-bottom:8px}
 .dt{width:100%;border-collapse:collapse;font-size:12px}
-.dt th{background:var(--pine-mid);padding:10px 14px;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:right;white-space:nowrap;border-bottom:1px solid var(--border)}
-.dt th:first-child,.dt th:nth-child(2){text-align:left}
-.dt td{padding:10px 14px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;font-weight:500}
-.dt td:first-child,.dt td:nth-child(2){text-align:left}.dt tr:last-child td{border-bottom:none}.dt tr:hover td{background:var(--surface-h)}
+.dt th{background:var(--pine-mid);padding:10px 12px;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:right;white-space:nowrap;border-bottom:1px solid var(--border)}
+.dt th:first-child{text-align:left;width:70px}.dt th:nth-child(2){text-align:left}
+.dt td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;font-weight:500}
+.dt td:first-child{text-align:left;width:70px}.dt td:nth-child(2){text-align:left}.dt tr:last-child td{border-bottom:none}.dt tr:hover td{background:var(--surface-h)}
 .buc{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}.stc{font-weight:700;color:var(--cloud)}
 .sf-link{color:var(--steel,#6BB5E8);text-decoration:none;font-size:11px;font-weight:600}.sf-link:hover{color:var(--lime)}
 /* WATERFALL */
@@ -100,7 +100,7 @@ main{padding:32px 48px 80px;max-width:1600px}
 .rcl-item{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted)}
 .rcl-dot{width:10px;height:4px;border-radius:2px}
 .role-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.role-studio{font-size:10px;color:var(--muted);width:72px;flex-shrink:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.role-studio{font-size:10px;color:var(--cloud);width:88px;flex-shrink:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .role-bar-group{flex:1;display:flex;flex-direction:column;gap:2px}
 .role-bar-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
 .role-bar-fill{height:100%;border-radius:3px}
@@ -666,10 +666,10 @@ function rRevenue(){
   let rcH='';
   roles.forEach(role=>{
     const vals=rows.map(r=>({
-      studio:r['Studio'],
+      studio:r['Studio'],bu:r['Business Unit'],
       cur:pm(r[role.cur]),
       fcst:pm(r[role.fcst])||pm(r[role.fcst.replace(M1,'Jun')])||0
-    })).filter(x=>x.cur>0||x.fcst>0).sort((a,b)=>b.fcst-a.fcst);
+    })).filter(x=>x.cur>0||x.fcst>0);  // preserve GSheet order (BU order = waterfall order)
     const maxV=Math.max(...vals.flatMap(x=>[x.cur,x.fcst]),1);
     rcH+=`<div class="role-chart-panel">
       <div class="role-chart-title">Revenue / ${role.key}</div>
@@ -681,7 +681,7 @@ function rRevenue(){
       const curW=x.cur/maxV*100,fcstW=x.fcst/maxV*100;
       const gr=x.cur>0?(x.fcst-x.cur)/x.cur*100:0;
       rcH+=`<div class="role-row">
-        <div class="role-studio">${x.studio}</div>
+        <div class="role-studio"><span style="font-size:8px;color:var(--muted);display:block;letter-spacing:.08em;text-transform:uppercase">${x.bu}</span>${x.studio}</div>
         <div class="role-bar-group">
           <div class="role-bar-track"><div class="role-bar-fill cur" style="width:${curW}%"></div></div>
           <div class="role-bar-track"><div class="role-bar-fill fcst" style="width:${fcstW}%"></div></div>
