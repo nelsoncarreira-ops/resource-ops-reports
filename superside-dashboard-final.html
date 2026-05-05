@@ -231,11 +231,15 @@ main{padding:0 48px 80px;max-width:1600px;margin-top:0}
 .sublabel-row .sublabel{padding-bottom:0;border-bottom:none;margin-bottom:0}
 
 
-.flabel{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-right:2px}
-.fselect{background:var(--pine-mid);border:1px solid var(--border-s);color:var(--cloud);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:500;padding:5px 10px;outline:none;cursor:pointer;min-width:140px;transition:border-color .15s}.fselect:focus{border-color:var(--lime)}
-.fselect option{background:var(--pine-mid);color:var(--cloud)}
-.fselect-wrap{display:flex;flex-direction:column;gap:3px}
+.fselect-wrap{display:flex;flex-direction:column;gap:3px;position:relative}
 .fselect-label{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.cdd-btn{background:var(--pine-mid);border:1px solid var(--border-s);color:var(--cloud);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:500;padding:5px 10px;cursor:pointer;min-width:150px;display:flex;align-items:center;justify-content:space-between;gap:10px;user-select:none;transition:border-color .15s}.cdd-btn:hover{border-color:var(--cloud)}
+.cdd-chevron{font-size:9px;opacity:.6;transition:transform .15s;flex-shrink:0}
+.cdd-panel{position:absolute;top:calc(100% + 2px);left:0;background:var(--pine-mid);border:1px solid var(--border-s);min-width:100%;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.4);display:none}
+.cdd-panel.open{display:block}
+.cdd-opt{padding:8px 12px;font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s,color .1s}.cdd-opt:hover{background:var(--surface-h);color:var(--cloud)}
+.cdd-opt.selected{color:var(--cloud)}.cdd-opt.selected .cdd-check{background:var(--lime);border-color:var(--lime);color:var(--pine)}
+.cdd-check{width:12px;height:12px;border:1px solid var(--border-s);flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
 .freset{background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;cursor:pointer;align-self:flex-end;height:29px;transition:all .15s}.freset:hover{border-color:var(--cloud);color:var(--cloud)}
 .factive-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .ftag{font-size:10px;font-weight:600;background:var(--lime);color:var(--pine);padding:2px 8px;border-radius:2px;display:inline-flex;align-items:center;gap:4px}
@@ -269,21 +273,27 @@ main{padding:0 48px 80px;max-width:1600px;margin-top:0}
   </header>
   <main>
     <div class="fbar">
-      <div class="fselect-wrap">
+      <div class="fselect-wrap" id="wrap-bu">
         <div class="fselect-label">Business Unit</div>
-        <select id="f-bu" class="fselect" multiple size="1" onchange="onFilterChange()">
-          <option value="All" selected>All BUs</option>
-          <option value="Earth">Earth</option>
-          <option value="Evergreen">Evergreen</option>
-          <option value="Sky">Sky</option>
-          <option value="Bloom">Bloom</option>
-        </select>
+        <div class="cdd-btn" id="btn-bu" onclick="toggleDD('bu')">
+          <span id="lbl-bu">All BUs</span><span class="cdd-chevron">&#9660;</span>
+        </div>
+        <div class="cdd-panel" id="panel-bu">
+          <div class="cdd-opt selected" data-val="All" onclick="pickBU('All')"><span class="cdd-check">&#10003;</span>All BUs</div>
+          <div class="cdd-opt" data-val="Earth" onclick="pickBU('Earth')"><span class="cdd-check"></span>Earth</div>
+          <div class="cdd-opt" data-val="Evergreen" onclick="pickBU('Evergreen')"><span class="cdd-check"></span>Evergreen</div>
+          <div class="cdd-opt" data-val="Sky" onclick="pickBU('Sky')"><span class="cdd-check"></span>Sky</div>
+          <div class="cdd-opt" data-val="Bloom" onclick="pickBU('Bloom')"><span class="cdd-check"></span>Bloom</div>
+        </div>
       </div>
-      <div class="fselect-wrap">
+      <div class="fselect-wrap" id="wrap-studio">
         <div class="fselect-label">Studio</div>
-        <select id="f-studio" class="fselect" multiple size="1" onchange="onFilterChange()">
-          <option value="All" selected>All Studios</option>
-        </select>
+        <div class="cdd-btn" id="btn-studio" onclick="toggleDD('studio')">
+          <span id="lbl-studio">All Studios</span><span class="cdd-chevron">&#9660;</span>
+        </div>
+        <div class="cdd-panel" id="panel-studio">
+          <div class="cdd-opt selected" data-val="All" onclick="pickStudio('All')"><span class="cdd-check">&#10003;</span>All Studios</div>
+        </div>
       </div>
       <button class="freset" onclick="resetFilters()">Reset</button>
       <div class="factive-tags" id="f-tags"></div>
@@ -675,63 +685,112 @@ const pillLbl=s=>s==='green'?'On target':s==='yellow'?'Watch':s==='over'?'Over c
 const stColor=s=>s==='green'?'var(--green)':s==='yellow'?'var(--yellow)':s==='over'?'var(--orange)':'var(--red)';
 
 // ── FILTER + TABS ──────────────────────────────────────────────────────────
-// Multi-select filter state
 let FBUs = new Set(['All']);
 let FStudios = new Set(['All']);
 
-function onFilterChange() {
-  const buSel = document.getElementById('f-bu');
-  const stSel = document.getElementById('f-studio');
-  FBUs = new Set([...buSel.options].filter(o=>o.selected).map(o=>o.value));
-  FStudios = new Set([...stSel.options].filter(o=>o.selected).map(o=>o.value));
-  // Treat empty selection or explicit All as All
-  if (FBUs.size===0 || FBUs.has('All')) { FBUs = new Set(['All']); [...buSel.options].forEach(o=>o.selected=o.value==='All'); }
-  if (FStudios.size===0 || FStudios.has('All')) { FStudios = new Set(['All']); }
-  updateStudioOptions();
-  renderFilterTags();
-  renderAll();
+// Close all dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#wrap-bu')) closeDD('bu');
+  if (!e.target.closest('#wrap-studio')) closeDD('studio');
+});
+
+function toggleDD(which) {
+  const panel = document.getElementById('panel-' + which);
+  const isOpen = panel.classList.contains('open');
+  closeDD('bu'); closeDD('studio');
+  if (!isOpen) panel.classList.add('open');
+}
+function closeDD(which) {
+  document.getElementById('panel-' + which).classList.remove('open');
 }
 
-function updateStudioOptions() {
-  const stSel = document.getElementById('f-studio');
-  const current = new Set([...stSel.options].filter(o=>o.selected).map(o=>o.value));
-  stSel.innerHTML = '';
-  const allOpt = document.createElement('option');
-  allOpt.value = 'All'; allOpt.textContent = 'All Studios';
-  // Select All if FStudios is All or nothing specific is selected
-  if (FStudios.has('All') || current.has('All') || current.size===0) allOpt.selected = true;
-  stSel.appendChild(allOpt);
-  if (!C.general) return;
-  const studios = C.general
-    .filter(r => FBUs.has('All') || FBUs.has(r['Business Unit']))
-    .map(r => r['Studio']);
-  [...new Set(studios)].forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s; opt.textContent = s;
-    if (!FStudios.has('All') && current.has(s)) opt.selected = true;
-    stSel.appendChild(opt);
+function pickBU(val) {
+  closeDD('bu');
+  if (val === 'All') {
+    FBUs = new Set(['All']);
+  } else {
+    FBUs.delete('All');
+    if (FBUs.has(val)) { FBUs.delete(val); } else { FBUs.add(val); }
+    if (FBUs.size === 0) FBUs = new Set(['All']);
+  }
+  // Reset studio filter when BU changes
+  FStudios = new Set(['All']);
+  syncDDBU(); syncDDStudio(); rebuildStudioPanel();
+  renderFilterTags(); renderAll();
+}
+
+function pickStudio(val) {
+  closeDD('studio');
+  if (val === 'All') {
+    FStudios = new Set(['All']);
+  } else {
+    FStudios.delete('All');
+    if (FStudios.has(val)) { FStudios.delete(val); } else { FStudios.add(val); }
+    if (FStudios.size === 0) FStudios = new Set(['All']);
+  }
+  syncDDStudio(); renderFilterTags(); renderAll();
+}
+
+function syncDDBU() {
+  const panel = document.getElementById('panel-bu');
+  panel.querySelectorAll('.cdd-opt').forEach(opt => {
+    const v = opt.dataset.val;
+    const sel = FBUs.has('All') ? v === 'All' : FBUs.has(v);
+    opt.classList.toggle('selected', sel);
+    opt.querySelector('.cdd-check').textContent = sel ? '✓' : '';
   });
+  const lbl = FBUs.has('All') ? 'All BUs' : [...FBUs].join(', ');
+  document.getElementById('lbl-bu').textContent = lbl;
+}
+
+function rebuildStudioPanel() {
+  const panel = document.getElementById('panel-studio');
+  panel.innerHTML = '<div class="cdd-opt selected" data-val="All" onclick="pickStudio(\'All\')"><span class="cdd-check">&#10003;</span>All Studios</div>';
+  if (!C.general) return;
+  const studios = [...new Set(
+    C.general.filter(r => FBUs.has('All') || FBUs.has(r['Business Unit'])).map(r => r['Studio'])
+  )];
+  studios.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'cdd-opt';
+    div.dataset.val = s;
+    div.onclick = () => pickStudio(s);
+    div.innerHTML = '<span class="cdd-check"></span>' + s;
+    panel.appendChild(div);
+  });
+  syncDDStudio();
+}
+
+function syncDDStudio() {
+  const panel = document.getElementById('panel-studio');
+  panel.querySelectorAll('.cdd-opt').forEach(opt => {
+    const v = opt.dataset.val;
+    const sel = FStudios.has('All') ? v === 'All' : FStudios.has(v);
+    opt.classList.toggle('selected', sel);
+    opt.querySelector('.cdd-check').textContent = sel ? '✓' : '';
+  });
+  const lbl = FStudios.has('All') ? 'All Studios' : [...FStudios].join(', ');
+  document.getElementById('lbl-studio').textContent = lbl;
 }
 
 function renderFilterTags() {
   const tags = [];
   if (!FBUs.has('All')) FBUs.forEach(b => tags.push({label:b, type:'bu'}));
   if (!FStudios.has('All')) FStudios.forEach(s => tags.push({label:s, type:'studio'}));
-  const el = document.getElementById('f-tags');
-  el.innerHTML = tags.map(t => `<span class="ftag">${t.label}<span class="ftag-x" onclick="removeFilterTag('${t.type}','${t.label}')">&#215;</span></span>`).join('');
+  document.getElementById('f-tags').innerHTML = tags.map(t =>
+    `<span class="ftag">${t.label}<span class="ftag-x" onclick="removeFilterTag('${t.type}','${t.label}')">&#215;</span></span>`
+  ).join('');
 }
 
 function removeFilterTag(type, value) {
-  const sel = document.getElementById(type==='bu'?'f-bu':'f-studio');
-  [...sel.options].forEach(o=>{ if(o.value===value) o.selected=false; });
-  onFilterChange();
+  if (type === 'bu') { FBUs.delete(value); if (FBUs.size===0) FBUs=new Set(['All']); FStudios=new Set(['All']); syncDDBU(); rebuildStudioPanel(); }
+  else { FStudios.delete(value); if (FStudios.size===0) FStudios=new Set(['All']); syncDDStudio(); }
+  renderFilterTags(); renderAll();
 }
 
 function resetFilters() {
-  const buSel=document.getElementById('f-bu');const stSel=document.getElementById('f-studio');
-  [...buSel.options].forEach(o=>o.selected=o.value==='All');
-  FBUs=new Set(['All']);FStudios=new Set(['All']);
-  updateStudioOptions();renderFilterTags();renderAll();
+  FBUs = new Set(['All']); FStudios = new Set(['All']);
+  syncDDBU(); rebuildStudioPanel(); syncDDStudio(); renderFilterTags(); renderAll();
 }
 
 function filt(arr, key='bu') {
@@ -744,7 +803,6 @@ function filt(arr, key='bu') {
   return out;
 }
 function filtStr(arr, key='bu') { return filt(arr, key); }
-function setF(bu,el){} // legacy stub — no longer used
 function tab(name,el){
   document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
@@ -784,7 +842,7 @@ async function loadAll(){
   }catch(e){console.error(e);setBadge('error','Error - retry');}
 }
 function setBadge(cls,txt){const b=document.getElementById('hbadge');b.className='hbadge '+cls;b.textContent=txt;}
-function renderAll(){if(!C.general||!C.general.length)return;updateStudioOptions();rRisk();rRevenue();rUtil();rCap();rPipeline();populateSimStudios();}
+function renderAll(){if(!C.general||!C.general.length)return;rebuildStudioPanel();rRisk();rRevenue();rUtil();rCap();rPipeline();populateSimStudios();}
 
 // ── TAB 01 - STUDIO OVERVIEW ───────────────────────────────────────────────
 function rRisk(){
