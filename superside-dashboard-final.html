@@ -222,6 +222,26 @@ main{padding:32px 48px 80px;max-width:1600px}
 .swf-divider{height:1px;background:var(--border-s);margin:5px 0}
 .swf-scenario-row{background:rgba(204,255,68,.06);border-radius:2px;padding:2px 0}
 
+
+.tab-footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.tab-footer-label{font-size:10px;color:var(--muted);font-weight:500}
+.tab-footer-link{font-size:10px;color:var(--steel,#6BB5E8);font-weight:600;text-decoration:none;letter-spacing:.04em}.tab-footer-link:hover{color:var(--lime)}
+.dl-btn{background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s;margin-left:auto}.dl-btn:hover{border-color:var(--lime);color:var(--lime)}
+.sublabel-row{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sublabel-row .sublabel{padding-bottom:0;border-bottom:none;margin-bottom:0}
+
+
+.fbar{display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.flabel{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.fselect{background:var(--pine-mid);border:1px solid var(--border-s);color:var(--cloud);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:500;padding:5px 10px;outline:none;cursor:pointer;min-width:140px;transition:border-color .15s}.fselect:focus{border-color:var(--lime)}
+.fselect option{background:var(--pine-mid);color:var(--cloud)}
+.fselect-wrap{display:flex;flex-direction:column;gap:3px}
+.fselect-label{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.freset{background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;cursor:pointer;align-self:flex-end;height:29px;transition:all .15s}.freset:hover{border-color:var(--cloud);color:var(--cloud)}
+.factive-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.ftag{font-size:10px;font-weight:600;background:var(--lime);color:var(--pine);padding:2px 8px;border-radius:2px;display:inline-flex;align-items:center;gap:4px}
+.ftag-x{cursor:pointer;font-size:12px;line-height:1;opacity:.7}.ftag-x:hover{opacity:1}
+
 </style>
 </head>
 <body>
@@ -250,12 +270,24 @@ main{padding:32px 48px 80px;max-width:1600px}
   </header>
   <main>
     <div class="fbar">
-      <span class="flabel">Filter by BU</span>
-      <button class="fbtn active" onclick="setF('All',this)">All</button>
-      <button class="fbtn" onclick="setF('Earth',this)">Earth</button>
-      <button class="fbtn" onclick="setF('Evergreen',this)">Evergreen</button>
-      <button class="fbtn" onclick="setF('Sky',this)">Sky</button>
-      <button class="fbtn" onclick="setF('Bloom',this)">Bloom</button>
+      <div class="fselect-wrap">
+        <div class="fselect-label">Business Unit</div>
+        <select id="f-bu" class="fselect" multiple size="1" onchange="onFilterChange()">
+          <option value="All" selected>All BUs</option>
+          <option value="Earth">Earth</option>
+          <option value="Evergreen">Evergreen</option>
+          <option value="Sky">Sky</option>
+          <option value="Bloom">Bloom</option>
+        </select>
+      </div>
+      <div class="fselect-wrap">
+        <div class="fselect-label">Studio</div>
+        <select id="f-studio" class="fselect" multiple size="1" onchange="onFilterChange()">
+          <option value="All" selected>All Studios</option>
+        </select>
+      </div>
+      <button class="freset" onclick="resetFilters()">Reset</button>
+      <div class="factive-tags" id="f-tags"></div>
     </div>
     <div class="tbar">
       <button class="tbtn active" data-tab="risk" onclick="tab('risk',this)">01 &middot; Studio Overview</button>
@@ -274,6 +306,10 @@ main{padding:32px 48px 80px;max-width:1600px}
         <div class="sublabel">3 dots: Revenue risk &middot; Utilization &middot; Capacity &nbsp;|&nbsp; Pipeline tags are clickable &rarr; Tab 05 &nbsp;|&nbsp; Lime line = target</div>
         <div id="scards" class="scards"><div class="loading"><div class="spin"></div>Fetching data...</div></div>
       </div>
+      <div class="tab-footer">
+        <span class="tab-footer-label">Data source:</span>
+        <a class="tab-footer-link" href="https://superside.omniapp.co/dashboards/c8f9c052" target="_blank">Staff Utilization &amp; Capacity — Omni Dashboard &#8599;</a>
+      </div>
     </div>
 
     <!-- TAB 02 -->
@@ -282,12 +318,16 @@ main{padding:32px 48px 80px;max-width:1600px}
       <div class="stitle">Revenue &amp; pipeline by studio</div>
       <div id="krow" class="krow"></div>
       <div class="sub">
-        <div class="sublabel">MRR waterfall by studio &mdash; always 4 buckets, $0 shown when no movement</div>
+        <div class="sublabel">MRR waterfall by studio ({M1}) &mdash; always 4 buckets, $0 shown when no movement</div>
         <div id="wf-cards" class="wf-grid"></div>
       </div>
       <div class="sub">
         <div class="sublabel">Revenue per role &mdash; current vs. forecasted across studios</div>
         <div id="role-charts" class="role-chart-grid"></div>
+      </div>
+      <div class="tab-footer">
+        <span class="tab-footer-label">Data source:</span>
+        <a class="tab-footer-link" href="https://superside.omniapp.co/dashboards/c8f9c052" target="_blank">Staff Utilization &amp; Capacity — Omni Dashboard &#8599;</a>
       </div>
     </div>
 
@@ -296,16 +336,20 @@ main{padding:32px 48px 80px;max-width:1600px}
       <div class="eyebrow">Billable utilization only</div>
       <div class="stitle">Utilization by studio, role &amp; staff</div>
       <div class="sub">
-        <div class="sublabel">Studio level &mdash; target 75&ndash;85% billable &nbsp;|&nbsp; Lime line = target (80%)</div>
+        <div class="sublabel">Studio level &mdash; target 75&ndash;85% billable &nbsp;|&nbsp; Lime line = target (80%) &nbsp;|&nbsp; Based on last 30 days</div>
         <div id="ub-cards" class="ub-grid"></div>
       </div>
       <div class="sub">
-        <div class="sublabel">Role level by studio &mdash; Creative 85% &middot; PM 80% &middot; CL 80% &middot; AM 50%</div>
+        <div class="sublabel">Role level by studio &mdash; Creative 85% &middot; PM 80% &middot; CL 80% &middot; AM 50% &nbsp;|&nbsp; Based on last 30 days</div>
         <div id="rb-cards" class="rb-grid"></div>
       </div>
       <div class="sub">
-        <div class="sublabel">Individual flags &mdash; more than 25% above or below personal billable target</div>
+        <div class="sublabel">Individual flags &mdash; more than 25% above or below personal billable target &nbsp;|&nbsp; Based on last 30 days</div>
         <div id="fgrid" class="fgrid"></div>
+      </div>
+      <div class="tab-footer">
+        <span class="tab-footer-label">Data source:</span>
+        <a class="tab-footer-link" href="https://superside.omniapp.co/dashboards/c8f9c052" target="_blank">Staff Utilization &amp; Capacity — Omni Dashboard &#8599;</a>
       </div>
     </div>
 
@@ -326,8 +370,15 @@ main{padding:32px 48px 80px;max-width:1600px}
         <div id="cqc" class="cgrid"></div>
       </div>
       <div class="sub">
-        <div class="sublabel">QC / direction heatmap</div>
+        <div class="sublabel-row">
+          <div class="sublabel">QC / direction heatmap</div>
+          <button class="dl-btn" onclick="downloadTable('hmqc')">&#8595; Download CSV</button>
+        </div>
         <div class="hw"><div id="hmqc"></div></div>
+      </div>
+      <div class="tab-footer">
+        <span class="tab-footer-label">Data source:</span>
+        <a class="tab-footer-link" href="https://superside.omniapp.co/dashboards/c8f9c052" target="_blank">Staff Utilization &amp; Capacity — Omni Dashboard &#8599;</a>
       </div>
     </div>
 
@@ -341,6 +392,7 @@ main{padding:32px 48px 80px;max-width:1600px}
           <div class="ps-title">Incoming opportunities</div>
           <div class="ps-count" id="inc-count">--</div>
         </div>
+        <div class="sublabel-row" style="margin-bottom:12px"><span style="font-size:10px;color:var(--muted)"></span><button class="dl-btn" onclick="downloadTable('inc-table')">&#8595; Download CSV</button></div>
         <div id="inc-table"><div class="loading"><div class="spin"></div>Loading...</div></div>
       </div>
 
@@ -350,6 +402,7 @@ main{padding:32px 48px 80px;max-width:1600px}
           <div class="ps-count" id="bo-count">--</div>
         </div>
         <div class="ps-note">One-off amount represents the total divided by the agreement term, allocated across dates based on that term.</div>
+        <div class="sublabel-row" style="margin-bottom:12px"><span></span><button class="dl-btn" onclick="downloadTable('bo-table')">&#8595; Download CSV</button></div>
         <div id="bo-table"><div class="loading"><div class="spin"></div>Loading...</div></div>
       </div>
 
@@ -358,7 +411,12 @@ main{padding:32px 48px 80px;max-width:1600px}
           <div class="ps-title">Potential MRR loss</div>
           <div class="ps-count" id="lo-count">--</div>
         </div>
+        <div class="sublabel-row" style="margin-bottom:12px"><span></span><button class="dl-btn" onclick="downloadTable('lo-table')">&#8595; Download CSV</button></div>
         <div id="lo-table"><div class="loading"><div class="spin"></div>Loading...</div></div>
+      </div>
+      <div class="tab-footer">
+        <span class="tab-footer-label">Data source:</span>
+        <a class="tab-footer-link" href="https://superside.omniapp.co/dashboards/c8f9c052" target="_blank">Staff Utilization &amp; Capacity — Omni Dashboard &#8599;</a>
       </div>
     </div>
 
@@ -435,6 +493,10 @@ main{padding:32px 48px 80px;max-width:1600px}
             </div>
           </div>
         </div>
+      </div>
+      <div class="tab-footer">
+        <span class="tab-footer-label">Data source:</span>
+        <a class="tab-footer-link" href="https://superside.omniapp.co/dashboards/c8f9c052" target="_blank">Staff Utilization &amp; Capacity — Omni Dashboard &#8599;</a>
       </div>
     </div>
   </main>
@@ -610,9 +672,70 @@ function rlTgt(role){return{Creative:85,'Creative Leader':80,PM:80,CL:80,AM:50,P
 const pillLbl=s=>s==='green'?'On target':s==='yellow'?'Watch':'Off target';
 
 // ── FILTER + TABS ──────────────────────────────────────────────────────────
-function filt(arr,key='bu'){return AF==='All'?arr:arr.filter(r=>r[key]===AF);}
-function filtStr(arr,key='bu'){return AF==='All'?arr:arr.filter(r=>r[key]===AF);}
-function setF(bu,el){AF=bu;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderAll();}
+// Multi-select filter state
+let FBUs = new Set(['All']);
+let FStudios = new Set(['All']);
+
+function onFilterChange() {
+  const buSel = document.getElementById('f-bu');
+  const stSel = document.getElementById('f-studio');
+  FBUs = new Set([...buSel.options].filter(o=>o.selected).map(o=>o.value));
+  FStudios = new Set([...stSel.options].filter(o=>o.selected).map(o=>o.value));
+  if (FBUs.has('All')) FBUs = new Set(['All']);
+  if (FStudios.has('All')) FStudios = new Set(['All']);
+  updateStudioOptions();
+  renderFilterTags();
+  renderAll();
+}
+
+function updateStudioOptions() {
+  const stSel = document.getElementById('f-studio');
+  const current = new Set([...stSel.options].filter(o=>o.selected).map(o=>o.value));
+  stSel.innerHTML = '<option value="All">All Studios</option>';
+  if (!C.general) return;
+  const studios = C.general
+    .filter(r => FBUs.has('All') || FBUs.has(r['Business Unit']))
+    .map(r => r['Studio']);
+  [...new Set(studios)].forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s; opt.textContent = s;
+    if (current.has(s)) opt.selected = true;
+    stSel.appendChild(opt);
+  });
+}
+
+function renderFilterTags() {
+  const tags = [];
+  if (!FBUs.has('All')) FBUs.forEach(b => tags.push({label:b, type:'bu'}));
+  if (!FStudios.has('All')) FStudios.forEach(s => tags.push({label:s, type:'studio'}));
+  const el = document.getElementById('f-tags');
+  el.innerHTML = tags.map(t => `<span class="ftag">${t.label}<span class="ftag-x" onclick="removeFilterTag('${t.type}','${t.label}')">&#215;</span></span>`).join('');
+}
+
+function removeFilterTag(type, value) {
+  const sel = document.getElementById(type==='bu'?'f-bu':'f-studio');
+  [...sel.options].forEach(o=>{ if(o.value===value) o.selected=false; });
+  onFilterChange();
+}
+
+function resetFilters() {
+  const buSel=document.getElementById('f-bu');const stSel=document.getElementById('f-studio');
+  [...buSel.options].forEach(o=>o.selected=o.value==='All');
+  FBUs=new Set(['All']);FStudios=new Set(['All']);
+  updateStudioOptions();renderFilterTags();renderAll();
+}
+
+function filt(arr, key='bu') {
+  let out = arr;
+  if (!FBUs.has('All')) out = out.filter(r => FBUs.has(r[key]||r['Business Unit']||''));
+  if (!FStudios.has('All')) {
+    const stKey = key==='Business Unit' ? 'Studio' : 'studio';
+    out = out.filter(r => FStudios.has(r[stKey]||r['studio']||''));
+  }
+  return out;
+}
+function filtStr(arr, key='bu') { return filt(arr, key); }
+function setF(bu,el){} // legacy stub — no longer used
 function tab(name,el){
   document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
@@ -652,7 +775,7 @@ async function loadAll(){
   }catch(e){console.error(e);setBadge('error','Error - retry');}
 }
 function setBadge(cls,txt){const b=document.getElementById('hbadge');b.className='hbadge '+cls;b.textContent=txt;}
-function renderAll(){if(!C.general||!C.general.length)return;rRisk();rRevenue();rUtil();rCap();rPipeline();populateSimStudios();}
+function renderAll(){if(!C.general||!C.general.length)return;updateStudioOptions();rRisk();rRevenue();rUtil();rCap();rPipeline();populateSimStudios();}
 
 // ── TAB 01 - STUDIO OVERVIEW ───────────────────────────────────────────────
 function rRisk(){
@@ -670,9 +793,16 @@ function rRisk(){
     const cur=pm(r['Current MRR']);
     const fcstJun=pm(r[`Forecasted Revenue (${M1})`])||pm(r['Forecasted Revenue (Jun)'])||0;
     const fcstJul=pm(r[`Forecasted Revenue (${M2})`])||pm(r['Forecasted Revenue (Jul)'])||0;
-    const lossJun=pm(r[`Potential MRR Loss (${M1})`])||pm(r['Potential MRR Loss (Jun)'])||0;
-    const incJun=pm(r[`Incoming MRR (${M1})`])||pm(r['Incoming MRR (Jun)'])||0;
-    const bstJun=pm(r[`Incoming Boosters (${M1})`])||pm(r['Incoming Boosters (Jun)'])||0;
+    // Pipeline tags: sum both forecast months
+    const lossM1=pm(r[`Potential MRR Loss (${M1})`])||pm(r['Potential MRR Loss (Jun)'])||0;
+    const lossM2=pm(r[`Potential MRR Loss (${M2})`])||pm(r['Potential MRR Loss (Jul)'])||0;
+    const incM1=pm(r[`Incoming MRR (${M1})`])||pm(r['Incoming MRR (Jun)'])||0;
+    const incM2=pm(r[`Incoming MRR (${M2})`])||pm(r['Incoming MRR (Jul)'])||0;
+    const bstM1=pm(r[`Incoming Boosters (${M1})`])||pm(r['Incoming Boosters (Jun)'])||0;
+    const bstM2=pm(r[`Incoming Boosters (${M2})`])||pm(r['Incoming Boosters (Jul)'])||0;
+    const lossJun=lossM1+lossM2;
+    const incJun=incM1+incM2;
+    const bstJun=bstM1+bstM2;
     const pctJun=cur?(fcstJun-cur)/cur*100:0;
     const pctJul=cur?(fcstJul-cur)/cur*100:0;
     const revSt=pctJun<-10?'red':pctJun<0?'yellow':'green';
@@ -716,8 +846,9 @@ function rRisk(){
       </div>
       <div class="scard-fcst">
         <div class="fcst-box">
-          <div class="fcst-box-label">Current MRR</div>
-          <div class="fcst-box-val">${fm(cur)}</div>
+          <div class="fcst-box-label">Current Revenue</div>
+          <div class="fcst-box-val">${fm(pm(r['Current Revenue']))}</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px">MRR ${fm(cur)}</div>
         </div>
         <div class="fcst-box">
           <div class="fcst-box-label">Fcst ${M1}</div>
@@ -737,9 +868,9 @@ function rRisk(){
         ${incJun===0&&lossJun===0&&bstJun===0?'<span class="pip-tag neutral">No pipeline movement</span>':''}
       </div>
       <div class="top2-grid">
-        <div class="top2-col"><div class="top2-col-label">Incoming</div>${top2IncH}</div>
-        <div class="top2-col"><div class="top2-col-label">Boosters</div>${top2BoH}</div>
-        <div class="top2-col"><div class="top2-col-label">At risk</div>${top2LoH}</div>
+        <div class="top2-col"><div class="top2-col-label">Top 2 Incoming</div>${top2IncH}</div>
+        <div class="top2-col"><div class="top2-col-label">Top 2 Boosters</div>${top2BoH}</div>
+        <div class="top2-col"><div class="top2-col-label">Top 2 At risk</div>${top2LoH}</div>
       </div>
       <div class="scard-ratios">
         <div><div class="ratio-label">MRR/AM</div><div class="ratio-val">${rAM>0?fm(rAM):'N/A'}</div></div>
@@ -764,14 +895,16 @@ function rRisk(){
 // ── TAB 02 - REVENUE ───────────────────────────────────────────────────────
 function rRevenue(){
   const rows=filt(C.general,'Business Unit');
-  const tC=rows.reduce((s,r)=>s+pm(r['Current MRR']),0);
+  const tC=rows.reduce((s,r)=>s+pm(r['Current Revenue']),0);
+  const tMRR=rows.reduce((s,r)=>s+pm(r['Current MRR']),0);
+  const tBst=rows.reduce((s,r)=>s+pm(r['Current Boosters']),0);
   const tL=rows.reduce((s,r)=>s+pm(r[`Potential MRR Loss (${M1})`]||r['Potential MRR Loss (Jun)']),0);
   const tI=rows.reduce((s,r)=>s+pm(r[`Incoming MRR (${M1})`]||r['Incoming MRR (Jun)']),0);
   const tB=rows.reduce((s,r)=>s+pm(r[`Incoming Boosters (${M1})`]||r['Incoming Boosters (Jun)']),0);
   const tF=rows.reduce((s,r)=>s+pm(r[`Forecasted Revenue (${M1})`]||r['Forecasted Revenue (Jun)']),0);
   const d=tF-tC;
   document.getElementById('krow').innerHTML=`
-    <div class="kcard"><div class="klabel">Total Current MRR</div><div class="kval">${fm(tC)}</div></div>
+    <div class="kcard"><div class="klabel">Total Current Revenue</div><div class="kval">${fm(tC)}</div><div class="ksub" style="color:var(--muted);font-size:10px">MRR ${fm(tMRR)} &nbsp;·&nbsp; Boosters ${fm(tBst)}</div></div>
     <div class="kcard"><div class="klabel">Potential MRR Loss</div><div class="kval dn">${fm(tL)}</div></div>
     <div class="kcard"><div class="klabel">Incoming MRR</div><div class="kval up">${fm(tI)}</div></div>
     <div class="kcard"><div class="klabel">Boosters</div><div class="kval" style="color:var(--lime)">${fm(tB)}</div></div>
@@ -1304,6 +1437,27 @@ function renderSimResults() {
     </div>`;
   });
   document.getElementById('sim-wf').innerHTML = wfH;
+}
+
+
+function downloadTable(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const table = container.querySelector('table');
+  if (!table) { alert('No table data to download.'); return; }
+  const rows = [...table.querySelectorAll('tr')];
+  const csv = rows.map(row => {
+    const cells = [...row.querySelectorAll('th,td')];
+    return cells.map(c => {
+      const txt = c.innerText.replace(/\n/g,' ').trim();
+      return txt.includes(',') || txt.includes('"') ? '"' + txt.replace(/"/g,'""') + '"' : txt;
+    }).join(',');
+  }).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = containerId + '_export.csv';
+  a.click();
 }
 
 </script>
