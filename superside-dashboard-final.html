@@ -24,8 +24,8 @@ header{background:var(--pine-mid);border-bottom:1px solid var(--border);padding:
 .hbadge{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border:1px solid}
 .hbadge.live{background:var(--green-bg);color:var(--green);border-color:rgba(144,224,192,.25)}.hbadge.loading{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,200,66,.25)}.hbadge.error{background:var(--red-bg);color:var(--red);border-color:rgba(240,112,112,.25)}
 .rbtn{background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 14px;cursor:pointer;transition:all .2s}.rbtn:hover{border-color:var(--lime);color:var(--lime)}
-main{padding:32px 48px 80px;max-width:1600px;margin-top:0}
-.ctrl-bar{position:sticky;top:56px;z-index:90;background:var(--pine);border-bottom:1px solid var(--border);padding:16px 48px 0;margin-bottom:0}
+main{padding:0 48px 80px;max-width:1600px;margin-top:0}
+.ctrl-bar{position:sticky;top:56px;z-index:50;background:var(--pine);border-bottom:1px solid var(--border);padding:16px 0 0;margin-bottom:32px}
 .fbar{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}.flabel{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-right:6px}
 .fbtn{background:transparent;border:1px solid var(--border-s);color:var(--muted);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:600;letter-spacing:.06em;padding:5px 14px;cursor:pointer;transition:all .15s}.fbtn:hover{border-color:var(--cloud);color:var(--cloud)}.fbtn.active{background:var(--lime);border-color:var(--lime);color:var(--pine)}
 .tbar{display:flex;border-bottom:1px solid var(--border);margin-bottom:0}
@@ -232,7 +232,6 @@ main{padding:32px 48px 80px;max-width:1600px;margin-top:0}
 .sublabel-row .sublabel{padding-bottom:0;border-bottom:none;margin-bottom:0}
 
 
-.fbar{display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap}
 .flabel{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-right:2px}
 .fselect{background:var(--pine-mid);border:1px solid var(--border-s);color:var(--cloud);font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:500;padding:5px 10px;outline:none;cursor:pointer;min-width:140px;transition:border-color .15s}.fselect:focus{border-color:var(--lime)}
 .fselect option{background:var(--pine-mid);color:var(--cloud)}
@@ -269,37 +268,37 @@ main{padding:32px 48px 80px;max-width:1600px;margin-top:0}
       <button class="rbtn" onclick="loadAll()">&#8635; Refresh</button>
     </div>
   </header>
-  <div class="ctrl-bar">
-    <div class="fbar">
-      <div class="fselect-wrap">
-        <div class="fselect-label">Business Unit</div>
-        <select id="f-bu" class="fselect" multiple size="1" onchange="onFilterChange()">
-          <option value="All" selected>All BUs</option>
-          <option value="Earth">Earth</option>
-          <option value="Evergreen">Evergreen</option>
-          <option value="Sky">Sky</option>
-          <option value="Bloom">Bloom</option>
-        </select>
-      </div>
-      <div class="fselect-wrap">
-        <div class="fselect-label">Studio</div>
-        <select id="f-studio" class="fselect" multiple size="1" onchange="onFilterChange()">
-          <option value="All" selected>All Studios</option>
-        </select>
-      </div>
-      <button class="freset" onclick="resetFilters()">Reset</button>
-      <div class="factive-tags" id="f-tags"></div>
-    </div>
-    <div class="tbar">
-      <button class="tbtn active" data-tab="risk" onclick="tab('risk',this)">01 &middot; Studio Overview</button>
-      <button class="tbtn" data-tab="rev" onclick="tab('rev',this)">02 &middot; Revenue</button>
-      <button class="tbtn" data-tab="util" onclick="tab('util',this)">03 &middot; Utilization</button>
-      <button class="tbtn" data-tab="cap" onclick="tab('cap',this)">04 &middot; Supply &amp; Demand</button>
-      <button class="tbtn" data-tab="pipeline" onclick="tab('pipeline',this)">05 &middot; Pipeline</button>
-      <button class="tbtn" data-tab="sim" onclick="tab('sim',this)">06 &middot; What-If</button>
-    </div>
-  </div>
   <main>
+    <div class="ctrl-bar">
+      <div class="fbar">
+        <div class="fselect-wrap">
+          <div class="fselect-label">Business Unit</div>
+          <select id="f-bu" class="fselect" multiple size="1" onchange="onFilterChange()">
+            <option value="All" selected>All BUs</option>
+            <option value="Earth">Earth</option>
+            <option value="Evergreen">Evergreen</option>
+            <option value="Sky">Sky</option>
+            <option value="Bloom">Bloom</option>
+          </select>
+        </div>
+        <div class="fselect-wrap">
+          <div class="fselect-label">Studio</div>
+          <select id="f-studio" class="fselect" multiple size="1" onchange="onFilterChange()">
+            <option value="All" selected>All Studios</option>
+          </select>
+        </div>
+        <button class="freset" onclick="resetFilters()">Reset</button>
+        <div class="factive-tags" id="f-tags"></div>
+      </div>
+      <div class="tbar">
+        <button class="tbtn active" data-tab="risk" onclick="tab('risk',this)">01 &middot; Studio Overview</button>
+        <button class="tbtn" data-tab="rev" onclick="tab('rev',this)">02 &middot; Revenue</button>
+        <button class="tbtn" data-tab="util" onclick="tab('util',this)">03 &middot; Utilization</button>
+        <button class="tbtn" data-tab="cap" onclick="tab('cap',this)">04 &middot; Supply &amp; Demand</button>
+        <button class="tbtn" data-tab="pipeline" onclick="tab('pipeline',this)">05 &middot; Pipeline</button>
+        <button class="tbtn" data-tab="sim" onclick="tab('sim',this)">06 &middot; What-If</button>
+      </div>
+    </div>
 
     <!-- TAB 01 -->
     <div id="tp-risk" class="tp active">
