@@ -17,6 +17,7 @@ body{background:var(--pine);color:var(--cloud);font-family:"Inter Tight",sans-se
 .g-in{background:var(--pine-mid);border:1px solid var(--border-s);color:var(--cloud);font-family:"Inter Tight",sans-serif;font-size:15px;font-weight:500;padding:14px 18px;outline:none;width:100%;letter-spacing:.06em;transition:border-color .2s}.g-in:focus{border-color:var(--lime)}
 .g-btn{background:var(--lime);color:var(--pine);border:none;cursor:pointer;font-family:"Inter Tight",sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:14px 24px;width:100%;transition:opacity .2s}.g-btn:hover{opacity:.85}
 .g-err{font-size:11px;color:var(--red);display:none}
+.g-note{font-size:10px;color:var(--muted);line-height:1.6;border-top:1px solid var(--border);padding-top:16px;margin-top:-8px}
 #app{display:none}
 header{background:var(--pine-mid);border-bottom:1px solid var(--border);padding:0 48px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .hl{display:flex;align-items:center;gap:18px}.logo{font-family:"Instrument Serif",serif;font-size:17px;color:var(--cloud)}.logo span{color:var(--lime)}.hdiv{width:1px;height:18px;background:var(--border-s)}.htitle{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
@@ -250,10 +251,11 @@ main{padding:0 48px 80px;max-width:1600px;margin-top:0}
 <div id="gate">
   <div class="gi">
     <div class="g-logo"><span>·</span>Superside</div>
-    <div class="g-sub">Resource Operations Dashboard</div>
+    <div class="g-sub">Studios Resource Ops Report</div>
     <input type="password" id="pwd" class="g-in" placeholder="Access code" autocomplete="off">
     <div class="g-err" id="gerr">Incorrect access code.</div>
-    <button class="g-btn" onclick="checkPwd()">Enter dashboard</button>
+    <button class="g-btn" onclick="checkPwd()">Enter Report</button>
+    <div class="g-note">This report is not intended to replace the Omni dashboards. It is simply a Resource Ops tool designed to provide a clear and straightforward operational overview of the studios, with the ability to explore what-if scenarios.</div>
   </div>
 </div>
 <div id="app">
@@ -679,16 +681,15 @@ function parseLosses(rows){
 }
 
 // ── THRESHOLDS ─────────────────────────────────────────────────────────────
-// Studio: target=80, lower=75. On target: 75–95 (target+15). Watch: 65–75. Off target: <65. Over capacity: >95.
+// Studio level: on target = 75–95 (range 75–85 + 10pp tolerance above). Watch = 65–75. Off = <65. Over = >95.
 function stSt(b){if(b===null)return'grey';if(b>95)return'over';if(b>=75)return'green';if(b>=65)return'yellow';return'red';}
-// Role: On target = lower → (target+15). Watch = (lower-10) → lower. Off target = below that. Over = above (target+15).
+// Role level: target is the floor of green. On target = target → target+15. Watch = target-10 → target. Off = <target-10. Over = >target+15.
 function rlSt(role,b){
   if(b===null)return'grey';
-  const cfg={'Creative':{tgt:85,lo:80},'Creative Leader':{tgt:80,lo:75},'CL':{tgt:80,lo:75},'PM':{tgt:80,lo:75},'AM':{tgt:50,lo:45},'Producer':{tgt:80,lo:75}};
-  const c=cfg[role]||{tgt:80,lo:75};
-  if(b>c.tgt+15)return'over';
-  if(b>=c.lo)return'green';
-  if(b>=c.lo-10)return'yellow';
+  const tgt={'Creative':85,'Creative Leader':80,'CL':80,'PM':80,'AM':50,'Producer':80}[role]||80;
+  if(b>tgt+15)return'over';
+  if(b>=tgt)return'green';
+  if(b>=tgt-10)return'yellow';
   return'red';
 }
 function rlTgt(role){return{Creative:85,'Creative Leader':80,PM:80,CL:80,AM:50,Producer:80}[role]||80;}
